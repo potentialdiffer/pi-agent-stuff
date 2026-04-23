@@ -15,10 +15,10 @@
     "url": "https://github.com/potentialdiffer/pi-agent-stuff.git"
   },
   "pi": {
-    "extensions": "./extensions",
-    "skills": "./skills",
-    "themes": "./themes",
-    "prompts": "./prompts"
+    "extensions": ["./extensions"],
+    "skills": ["./skills"],
+    "themes": ["./themes"],
+    "prompts": ["./prompts"]
   },
   "peerDependencies": {
     "@mariozechner/pi-coding-agent": "*",

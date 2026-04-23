@@ -1,0 +1,9 @@
+{
+  "name": "caveman-dark",
+  "colors": {
+    "background": "#1a1a1a",
+    "foreground": "#cccccc",
+    "accent": "#ffaa00",
+    "error": "#ff5555"
+  }
+}

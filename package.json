@@ -1,0 +1,28 @@
+{
+  "name": "pi-agent-stuff",
+  "version": "0.1.0",
+  "description": "Potentialdiffer's pi coding agent skills, extensions, and themes",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi-skill",
+    "pi-theme"
+  ],
+  "readme": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/potentialdiffer/pi-agent-stuff.git"
+  },
+  "pi": {
+    "extensions": "./extensions",
+    "skills": "./skills",
+    "themes": "./themes",
+    "prompts": "./prompts"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@mariozechner/pi-ai": "*",
+    "@mariozechner/pi-tui": "*"
+  }
+}

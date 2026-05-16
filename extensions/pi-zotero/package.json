@@ -1,0 +1,9 @@
+{
+  "name": "pi-zotero",
+  "version": "1.0.0",
+  "description": "Pi extension for Zotero API integration",
+  "main": "index.ts",
+  "pi": {
+    "extensions": ["./index.ts"]
+  }
+}

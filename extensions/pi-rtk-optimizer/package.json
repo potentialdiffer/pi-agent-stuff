@@ -1,0 +1,8 @@
+{
+  "name": "pi-rtk-optimizer",
+  "version": "1.0.0",
+  "description": "RTK query optimizer configuration for Pi",
+  "pi": {
+    "extensions": []
+  }
+}

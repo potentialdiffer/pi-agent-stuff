@@ -1,0 +1,17 @@
+{
+  "name": "pi-status",
+  "version": "1.0.0",
+  "description": "pi extension that displays status information of current directory with git information",
+  "main": "index.ts",
+  "pi": {
+    "extensions": ["./index.ts"]
+  },
+  "keywords": [
+    "pi",
+    "extension",
+    "git",
+    "status"
+  ],
+  "author": "",
+  "license": "MIT"
+}

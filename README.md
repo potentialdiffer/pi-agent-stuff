@@ -1,22 +1,24 @@
 # Pi Agent Stuff
 
-Custom extensions, skills, themes, and prompts for the [Pi Coding Agent](https://github.com/mariozechner/pi-coding-agent).
+Custom extensions, skills, and prompts for the [Pi Coding Agent](https://github.com/mariozechner/pi-coding-agent). Focused on research and engineering workflows.
 
 ## Contents
 
 ### Extensions (`extensions/`)
-- **index.ts** - Custom toolkit extension
-  - Shows notification on session start
-  - Registers `toolkit` command for status check
+- **pi-status/** - Git status in footer
+  - Shows branch, clean status, changes, staged, untracked counts
+- **security-gate/** - Security protection
+  - Blocks dangerous commands (rm -rf, dd, mkfs, etc.)
+  - Protects system paths (/etc, /usr, /bin, etc.)
+  - Confirms wildcard and recursive operations
+- **pi-zotero/** - Zotero integration
+  - Better BibTeX parsing and export
+  - Zotero API for citation management
+  - Paper search and metadata retrieval
+- **pi-rtk-optimizer/** - RTK query optimization configuration
 
 ### Skills (`skills/`)
-- **git-info/** - Git information skill (see `SKILL.md` for details)
-
-### Themes (`themes/`)
-- **caveman-dark.json** - Dark theme with orange accent
-  - Background: `#1a1a1a`
-  - Foreground: `#cccccc`
-  - Accent: `#ffaa00`
+- **git-info/** - Git repository analysis (see `SKILL.md` for details)
 
 ### Prompts (`prompts/`)
 - **review.md** - Code review prompt template
@@ -30,7 +32,22 @@ git clone https://github.com/potentialdiffer/pi-agent-stuff.git
 cd pi-agent-stuff
 ```
 
-Add to your Pi config to load extensions, skills, and themes.
+Add to your Pi config to load extensions, skills, and prompts.
+
+## Configuration
+
+For **pi-zotero**, create a `config.json` in the extension directory with your Zotero API credentials:
+```json
+{
+  "apiKey": "your-api-key",
+  "libraryId": "your-library-id",
+  "libraryType": "user",
+  "betterBibtex": {
+    "enabled": true,
+    "port": 23119
+  }
+}
+```
 
 ## License
 

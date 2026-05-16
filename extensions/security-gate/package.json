@@ -1,0 +1,9 @@
+{
+  "name": "security-gate",
+  "version": "1.0.0",
+  "description": "Security extension that blocks dangerous commands and protects system paths",
+  "main": "index.ts",
+  "pi": {
+    "extensions": ["./index.ts"]
+  }
+}

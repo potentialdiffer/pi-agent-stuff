@@ -1,0 +1,6 @@
+{
+  "apiKey": "your-zotero-api-key",
+  "libraryId": "your-library-id",
+  "libraryType": "user",
+  "groupLibraryIds": []
+}

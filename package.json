@@ -1,13 +1,15 @@
 {
   "name": "pi-agent-stuff",
   "version": "0.1.0",
-  "description": "Potentialdiffer's pi coding agent skills, extensions, and themes",
+  "description": "Potentialdiffer's pi coding agent extensions, skills, and prompts for research and engineering",
   "type": "module",
   "keywords": [
     "pi-package",
     "pi-extension",
     "pi-skill",
-    "pi-theme"
+    "pi-prompt",
+    "research",
+    "engineering"
   ],
   "readme": "README.md",
   "repository": {
@@ -17,7 +19,6 @@
   "pi": {
     "extensions": ["./extensions"],
     "skills": ["./skills"],
-    "themes": ["./themes"],
     "prompts": ["./prompts"]
   },
   "peerDependencies": {

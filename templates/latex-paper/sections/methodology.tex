@@ -1,0 +1,79 @@
+\section{Methodology}
+\label{sec:method}
+
+% High-level overview
+Our approach, [method name], consists of three main components:
+(1) [Component A], (2) [Component B], and (3) [Component C].
+Figure \ref{fig:overview} illustrates the overall architecture.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.8\linewidth]{figures/overview.pdf}
+\caption{Overview of our methodology.}
+\label{fig:overview}
+\end{figure*}
+
+% Detailed description
+\subsection{Component A}
+\label{sec:component_a}
+
+Component A addresses [specific problem]. The key insight is [insight].
+
+\paragraph{Mathematical Formulation}
+Formally, we define [definition]. Given [inputs], we compute [output] using:
+\begin{equation}
+\label{eq:formula}
+f(x) = \sum_{i=1}^{n} w_i \cdot \phi_i(x) + b
+\end{equation}
+where $w_i$ are [description], $\phi_i$ are [description], and $b$ is [description].
+
+\paragraph{Algorithm}
+Algorithm \ref{alg:component_a} describes the computation process.
+
+\begin{algorithm}[t]
+\caption{Component A Algorithm}
+\label{alg:component_a}
+\begin{algorithmic}[1]
+\STATE {\bf Input:} $X, Y, \epsilon$ 
+\STATE {\bf Output:} $\theta$ 
+\STATE Initialize $\theta$ randomly
+\FOR{iteration = 1 to max_iterations}
+    \STATE Compute gradient: $g \leftarrow \nabla_\theta J(\theta)$
+    \STATE Update: $\theta \leftarrow \theta - \alpha \cdot g$
+    \STATE Check convergence: if $|g| < \epsilon$, break
+\ENDFOR
+\RETURN $\theta$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Component B}
+\label{sec:component_b}
+
+Component B [description]. The implementation uses [technology/algorithm].
+
+\paragraph{Complexity Analysis}
+The time complexity of Component B is O([complexity]), and space complexity is O([complexity]).
+
+\subsection{Component C}
+\label{sec:component_c}
+
+\paragraph{Implementation Details}
+We implemented Component C using [language/framework].
+Key optimizations include:
+\begin{itemize}
+    \item [Optimization 1]: [description]
+    \item [Optimization 2]: [description]
+    \item [Optimization 3]: [description]
+\end{itemize}
+
+% Theoretical properties
+\subsection{Theoretical Properties}
+
+\begin{theorem}
+\label{thm:convergence}
+Under [assumptions], Algorithm \ref{alg:component_a} converges to a local minimum at rate O($1/t$).
+\end{theorem}
+
+\begin{proof}
+[Proof here]
+\end{proof}

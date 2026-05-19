@@ -94,6 +94,11 @@ export default function (pi: ExtensionAPI) {
     if (toolName === "bash" && input.command) {
       const cmd = input.command.trim();
 
+      // Allow piping to /dev/null (common noise suppression)
+      if (cmd.includes("2>/dev/null") || cmd.includes(">/dev/null") || cmd.includes(" | /dev/null")) {
+        return; // Allow commands that suppress output
+      }
+
       // Check critical patterns
       for (const pattern of CRITICAL_PATTERNS) {
         if (pattern.test(cmd)) {

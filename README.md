@@ -5,6 +5,11 @@ Custom extensions, skills, and prompts for the [Pi Coding Agent](https://github.
 ## Contents
 
 ### Extensions (`extensions/`)
+- **pdf-reader/** - PDF processing with poppler
+  - `pdf_extract_text` - Extract text with layout preservation
+  - `pdf_get_info` - Get PDF metadata (title, author, pages)
+  - `pdf_extract_pages` - Extract specific page ranges
+  - Requires: poppler-utils (pdftotext, pdfinfo)
 - **pi-status/** - Git status in footer
   - Shows branch, clean status, changes, staged, untracked counts
 - **security-gate/** - Security protection
@@ -19,6 +24,11 @@ Custom extensions, skills, and prompts for the [Pi Coding Agent](https://github.
 
 ### Skills (`skills/`)
 - **git-info/** - Git repository analysis (see `SKILL.md` for details)
+- **review/** - Document and PDF review
+  - Structured analysis for academic papers, code docs, general documents
+  - Auto-extracts PDF text using pdf-reader tools
+  - Provides strengths, weaknesses, questions, suggestions
+  - Includes rating system (1-10 scale)
 
 ### Prompts (`prompts/`)
 - **review.md** - Code review prompt template

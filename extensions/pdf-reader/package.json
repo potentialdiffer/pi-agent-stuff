@@ -1,0 +1,13 @@
+{
+  "name": "pi-pdf-review-tools",
+  "version": "1.0.0",
+  "description": "PDF reading and review tools for pi coding agent",
+  "keywords": ["pi-package", "pdf", "review", "poppler"],
+  "pi": {
+    "extensions": ["./index.ts"]
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

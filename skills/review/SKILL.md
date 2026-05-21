@@ -50,7 +50,7 @@ instructions: |
   - **Suggestions**: Specific, actionable recommendations
 
   ## 5. OUTPUT FORMAT
-  Provide structured response with these sections:
+  Provide structured response with these sections for a general review:
 
   ```
   ## Summary
@@ -80,6 +80,41 @@ instructions: |
   ## Rating: [X/10]
   [Brief justification]
   ```
+
+  For a review for easychair the following fields are required:
+  ## Overall evaluation: Please provide an evaluation score for the paper.
+  - strong accept
+  - accept
+  - weak accept
+  - weak reject
+  - reject
+  - strong reject
+
+  ## Major strong points: Please explain clearly the value and nature of the contributions.
+  - [major strong point 1]
+  - [major strong point 2]
+
+  ## Major weak points: Please indicate clearly the perceived limitations of the paper, especially technical errors, missing related work and recycled results.
+   - [major weak point 1]
+   - [major weak point 2]
+
+  ## Detailed Comments: Please further motivate your overall evaluation score, strong and weak points, and make sure to include comments on novelty, technical depth and presentation.
+   - [detailed comment 1]
+   - [detailed comment 2]
+
+  ## Reviewer's confidence: Reviewer's confidence
+  - expert
+  - high
+  - low
+  - none
+
+  ## Is this paper a suitable candidate for the best paper award? please state if this paper is a suitable candidate for the best paper award
+  - yes
+  - no
+
+  ## Confidential remarks for the program committee: If you wish to add any remarks intended only for PC members please write them below. These remarks will only be seen by the PC members having access to reviews for this submission. They will not be sent to the authors. This field is optional.
+  - [Remark 1]
+  - [Remark 2]
 
   ## 6. TOOL USAGE RULES
   - **MUST**: Use pdf_extract_text for any PDF before analysis

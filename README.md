@@ -21,6 +21,14 @@ Custom extensions, skills, and prompts for the [Pi Coding Agent](https://github.
   - Zotero API for citation management
   - Paper search and metadata retrieval
 - **pi-rtk-optimizer/** - RTK query optimization configuration
+- **mistral-agent-tools/** - Mistral AI tools
+  - `mistral_generate_image` - Image generation from text prompts
+  - `mistral_websearch` - Websearch with citations
+  - `/mistral-setup` - Configure API key
+  - `/mistral-image` - Generate images
+  - `/mistral-websearch` - Search the web
+  - `/explore-images` - Browse generated images
+  - Requires: Mistral API key
 
 ### Skills (`skills/`)
 - **git-info/** - Git repository analysis (see `SKILL.md` for details)

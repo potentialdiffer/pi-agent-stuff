@@ -10,6 +10,7 @@ instructions: |
   - If user provides a URL: Fetch content if possible, or ask user to download
   - If user provides text directly: Proceed to analysis
   - Use `pdf_get_info` to get metadata (title, author, pages) for context
+  - Be aware that using `pdf_extract_text` or `pdf_extract_pages` can create layout errors in the text, e.g. hyphenation artifacts from line breaks which can be safely ignored
 
   ## 2. EXTRACTION STRATEGY
   - For full document review: Use `pdf_extract_text(path="FILE.pdf", layout=true)`
@@ -19,6 +20,8 @@ instructions: |
 
   ## 3. REVIEW FRAMEWORK
 
+  - **Presentation**:  Identify writing errors, punctuation issues, grammatical mistakes 
+
   ### For Academic Papers:
   - **Title & Authors**: Verify relevance to user's interests
   - **Abstract**: Summarize in 3 bullet points
@@ -27,6 +30,7 @@ instructions: |
   - **Results**: Extract key findings, metrics, statistical significance
   - **Discussion**: Note limitations, future work
   - **References**: Check recency, relevance
+  - **Logic**: Look at mathematical equation or general expressions and check their soundness
 
   ### For Code/Technical Documents:
   - **Structure**: Clarity, organization, navigation
@@ -34,6 +38,7 @@ instructions: |
   - **Completeness**: All necessary information present
   - **Examples**: Quality and relevance of examples
   - **Best Practices**: Follows conventions, security, performance
+  - **Logic**: Look at mathematical equation or general expressions and check their soundness
 
   ### For General Documents:
   - **Clarity**: Easy to understand, well-written
@@ -41,6 +46,7 @@ instructions: |
   - **Accuracy**: Factual correctness
   - **Style**: Appropriate tone and formatting
   - **Actionability**: Clear next steps or takeaways
+  - **Logic**: Look at mathematical equation or general expressions and check their soundness
 
   ## 4. CRITICAL ANALYSIS
   Always include:

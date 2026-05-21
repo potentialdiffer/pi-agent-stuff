@@ -19,6 +19,7 @@ instructions: |
   - Always confirm extraction worked before analyzing
 
   ## 3. REVIEW FRAMEWORK
+  Always reiterate on the document 2-3 times, and adjust your review. Look for the points mentioned below.
 
   - **Presentation**:  Identify writing errors, punctuation issues, grammatical mistakes 
 
@@ -121,6 +122,13 @@ instructions: |
   ## Confidential remarks for the program committee: If you wish to add any remarks intended only for PC members please write them below. These remarks will only be seen by the PC members having access to reviews for this submission. They will not be sent to the authors. This field is optional.
   - [Remark 1]
   - [Remark 2]
+
+  Always create a list of writing errors, wrong punctuation etc.
+
+  ## Writing and Formatting Issues
+  - [Issue 1]
+  - [Issue 2]
+
 
   ## 6. TOOL USAGE RULES
   - **MUST**: Use pdf_extract_text for any PDF before analysis

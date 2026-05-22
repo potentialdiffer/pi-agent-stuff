@@ -21,6 +21,9 @@
     "skills": ["./skills"],
     "prompts": ["./prompts"]
   },
+  "scripts": {
+    "postinstall": "pi install npm:pi-caveman@1.0.7 &&  pi install npm:pi-observational-memory@2.4.3"
+  },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*",
     "@earendil-works/pi-ai": "*",

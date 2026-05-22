@@ -9,6 +9,21 @@ const repoRoot = join(__dirname, '..');
 const externalExtPath = join(repoRoot, 'external-extensions.json');
 const settingsPath = join(homedir(), '.pi', 'agent', 'settings.json');
 
+// Read own package.json to identify this repo
+const pkg = JSON.parse(readFileSync(join(repoRoot, 'package.json'), 'utf8'));
+const repoUrl = pkg.repository.url;
+const match = repoUrl.match(/github.com\/([^\/]+)\/([^.]+)/);
+const user = match[1];
+const repo = match[2];
+
+// Possible identifiers for this repo in settings
+const ownIdentifiers = [
+  `git:github.com/${user}/${repo}`,
+  `https://github.com/${user}/${repo}`,
+  `https://github.com/${user}/${repo}.git`,
+  `github.com/${user}/${repo}`
+];
+
 // Read desired packages
 const desiredPackages = JSON.parse(readFileSync(externalExtPath, 'utf8'));
 
@@ -21,9 +36,12 @@ try {
   // Settings file doesn't exist yet
 }
 
-// Find packages to install and remove
+// Find packages to install and remove (excluding own repo)
 const toInstall = desiredPackages.filter(p => !currentPackages.includes(p));
-const toRemove = currentPackages.filter(p => !desiredPackages.includes(p));
+const toRemove = currentPackages.filter(p => 
+  !desiredPackages.includes(p) && 
+  !ownIdentifiers.includes(p)
+);
 
 // Install new packages
 if (toInstall.length > 0) {

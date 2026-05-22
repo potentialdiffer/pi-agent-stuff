@@ -1,4 +1,5 @@
 [
   "npm:pi-caveman@1.0.7",
-  "npm:pi-observational-memory@2.4.3"
+  "npm:pi-observational-memory@2.4.3",
+  "npm:@juicesharp/rpiv-ask-user-question@1.12.0"
 ]

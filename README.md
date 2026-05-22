@@ -52,6 +52,12 @@ cd pi-agent-stuff
 
 Add to your Pi config to load extensions, skills, and prompts.
 
+### With Pi
+
+```bash
+pi install pi:git@github.com:potentialdiffer/pi-agent-stuff.git
+```
+
 ## Configuration
 
 For **pi-zotero**, create a `config.json` in the extension directory with your Zotero API credentials:

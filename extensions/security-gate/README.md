@@ -1,15 +1,25 @@
 # Security Gate Extension
 
-A security extension for pi that blocks dangerous commands and protects system paths, with the ability to **remember your decisions**.
+A security extension for pi that blocks dangerous commands and protects system paths, with the ability to **remember your decisions** and **intelligent handling of bin directories**.
 
 ## Features
 
 ### Core Security Checks
 - Blocks dangerous command patterns (rm -rf, dd, mkfs, fork bombs, etc.)
-- Protects system paths (/etc, /usr, /bin, /sbin, etc.)
+- Protects system paths (/etc, /usr, /sbin, /lib, etc.) from write operations
 - Blocks write operations on protected paths
 - Confirms wildcard and recursive operations
 - Protects critical config files (.env, config.json, etc.)
+
+### Intelligent Bin Directory Handling
+- ✅ **Allows execution** from `/bin/`, `/usr/bin/`, `/usr/local/bin/` system paths
+- ✅ **Allows all operations** in local bin directories:
+  - Python virtual environments: `./venv/bin/`, `./.venv/bin/`
+  - Node.js local binaries: `./node_modules/.bin/`
+  - User bin directories: `~/.local/bin/`, `~/.nvm/versions/*/bin/`, `~/.pyenv/versions/*/bin/`
+  - Project bin directories: `./bin/`
+- ✅ **Still protects** system bin paths from write/modify operations
+- ✅ **Allows rm** in local bin directories (for cleanup)
 
 ### Remember Decisions
 The extension now remembers your allow/deny choices for specific commands, paths, or files. When you encounter a security prompt, you have four options:
@@ -70,12 +80,52 @@ Each remembered decision has a type that determines what it matches against:
 - **file** - Matches against specific filenames
 
 When adding a decision manually, you can specify the type:
+
+### Bin Directory Patterns
+
+The extension recognizes these local bin directory patterns (allowed without prompts):
+
+| Pattern | Example | Description |
+|---------|---------|-------------|
+| `./**/bin/` | `./venv/bin/python` | Relative bin directories |
+| `../**/bin/` | `../myproject/bin/script` | Parent relative bin directories |
+| `*/venv/bin/` | `/home/user/project/venv/bin/pip` | Python virtual environments |
+| `*/.venv/bin/` | `/home/user/project/.venv/bin/activate` | Hidden venv directories |
+| `*/node_modules/.bin/` | `./node_modules/.bin/eslint` | Node.js local binaries |
+| `~/.local/bin/` | `~/.local/bin/myapp` | User local binaries |
+| `~/.nvm/versions/*/bin/` | `~/.nvm/versions/node/v20/bin/node` | NVM Node.js versions |
+| `~/.pyenv/versions/*/bin/` | `~/.pyenv/versions/3.11/bin/python` | Pyenv Python versions |
+| `~/.asdf/shims/` | `~/.asdf/shims/node` | ASDF version manager shims |
+| `./bin/` | `./bin/myscript` | Project bin directories |
 ```
 /security-gate add allow "rm -rf /tmp/*" command
 /security-gate add deny "/etc/" path
 ```
 
 If no type is specified, it defaults to "command".
+
+## Behavior Details
+
+### System Bin Paths
+
+The extension now **allows execution** from system bin paths like `/bin/`, `/usr/bin/`, `/usr/local/bin/`. This means:
+
+- ✅ `/bin/ls` - Allowed (execution)
+- ✅ `/usr/bin/python` - Allowed (execution)
+- ❌ `rm /bin/file` - Blocked (write operation)
+- ❌ `chmod /usr/bin/file` - Blocked (write operation)
+- ❌ `cp myfile /bin/` - Blocked (write operation)
+
+### Local Bin Paths
+
+All operations are allowed in recognized local bin directories:
+
+- ✅ `./venv/bin/python script.py` - Allowed
+- ✅ `./venv/bin/pip install package` - Allowed
+- ✅ `./node_modules/.bin/eslint .` - Allowed
+- ✅ `rm ./venv/bin/old_script` - Allowed
+- ✅ `edit ./bin/myscript` - Allowed
+- ✅ `write ./bin/newscript` - Allowed
 
 ## Customization
 

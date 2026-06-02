@@ -24,6 +24,22 @@ const SYSTEM_PATHS = [
   "/dev/",
 ];
 
+// Local bin directory patterns that should be allowed for execution
+const LOCAL_BIN_PATTERNS = [
+  /^\.\/.*\/bin\//,              // ./anything/bin/
+  /^\.\.\/.*\/bin\//,             // ../anything/bin/
+  /\/venv\/bin\//,               // /path/venv/bin/
+  /\/.venv\/bin\//,              // /path/.venv/bin/
+  /\/node_modules\/\.bin\//,     // /path/node_modules/.bin/
+  /^~\/\.local\/bin\//,          // ~/.local/bin/
+  /^~\/\.nvm\/versions\/.*\/bin\//, // ~/.nvm/versions/node/bin/
+  /^~\/\.pyenv\/versions\/.*\/bin\//, // ~/.pyenv/versions/python/bin/
+  /^~\/\.asdf\/shims\//,         // ~/.asdf/shims/
+  /^\.\/bin\//,                  // ./bin/
+  /\/\.venv\//,                  // Any .venv directory
+  /\/venv\//,                    // Any venv directory
+];
+
 // Commands that are safe for read-only operations with wildcards
 const READ_ONLY_COMMANDS = [
   "ls",
@@ -147,6 +163,17 @@ function createPatternFromCommand(cmd: string): string {
            .replace(/\\\?/g, ".");
 }
 
+// Helper to check if a command accesses local bin directories
+function isLocalBinAccess(cmd: string): boolean {
+  return LOCAL_BIN_PATTERNS.some(pattern => pattern.test(cmd));
+}
+
+// Helper to check if a command is a write/modify operation
+function isWriteOperation(cmd: string): boolean {
+  const baseCmd = cmd.trim().split(/\s+/)[0];
+  return WRITE_COMMANDS.includes(baseCmd);
+}
+
 export default function (pi: ExtensionAPI) {
   // Load decisions at startup
   let cachedDecisions: RememberedDecision[] = [];
@@ -233,6 +260,11 @@ export default function (pi: ExtensionAPI) {
         return; // Allow commands that suppress output
       }
 
+      // NEW: Allow access to local bin directories (venv, node_modules, etc.)
+      if (isLocalBinAccess(cmd)) {
+        return; // Allow local bin directory access without prompts
+      }
+
       // Check critical patterns
       for (const pattern of CRITICAL_PATTERNS) {
         if (pattern.test(cmd)) {
@@ -259,6 +291,13 @@ export default function (pi: ExtensionAPI) {
             return; // Allow read operations
           }
           
+          // NEW: Allow execution of binaries from system bin paths
+          // (e.g., /bin/ls, /usr/bin/python, /usr/local/bin/node)
+          // Only block write operations
+          if (!isWriteOperation(cmd)) {
+            return; // Allow execution from system bin paths
+          }
+          
           // Block or confirm write operations on system paths
           if (WRITE_COMMANDS.includes(baseCmd)) {
             const allowed = await checkAndPrompt(
@@ -273,11 +312,11 @@ export default function (pi: ExtensionAPI) {
             return;
           }
           
-          // For other commands, ask for confirmation
+          // For other write-like commands, ask for confirmation
           const allowed = await checkAndPrompt(
             cmd,
             "command",
-            `⚠️  This command accesses a protected system path:\n\n  \`${cmd}\`\n\nAffected path: ${sysPath}\n\nWhat would you like to do?`,
+            `⚠️  This command modifies a protected system path:\n\n  \`${cmd}\`\n\nAffected path: ${sysPath}\n\nWhat would you like to do?`,
             ctx
           );
           if (!allowed) {
@@ -319,6 +358,12 @@ export default function (pi: ExtensionAPI) {
         if (cmd.includes("/tmp/") || cmd.includes(" /tmp")) {
           return;
         }
+        
+        // NEW: Allow rm in local bin directories (e.g., cleaning up venv)
+        if (isLocalBinAccess(cmd)) {
+          return; // Allow rm in local bin directories
+        }
+        
         const allowed = await checkAndPrompt(
           cmd,
           "command",
@@ -334,6 +379,11 @@ export default function (pi: ExtensionAPI) {
     // Check write operations
     if (toolName === "write" && input.path) {
       const path = input.path as string;
+
+      // NEW: Allow writes to local bin directories (e.g., creating scripts in ./bin/)
+      if (LOCAL_BIN_PATTERNS.some(p => p.test(path))) {
+        return; // Allow writes to local bin directories
+      }
 
       // Check system paths - always block writes
       for (const sysPath of SYSTEM_PATHS) {
@@ -376,6 +426,12 @@ export default function (pi: ExtensionAPI) {
     // Check edit operations on system files - always block
     if (toolName === "edit" && input.path) {
       const path = input.path as string;
+
+      // NEW: Allow edits to local bin directories
+      if (LOCAL_BIN_PATTERNS.some(p => p.test(path))) {
+        return; // Allow edits to local bin directories
+      }
+
       for (const sysPath of SYSTEM_PATHS) {
         if (path.startsWith(sysPath)) {
           const allowed = await checkAndPrompt(

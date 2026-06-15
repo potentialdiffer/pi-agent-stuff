@@ -19,9 +19,12 @@ const repo = match[2];
 // Possible identifiers for this repo in settings
 const ownIdentifiers = [
   `git:github.com/${user}/${repo}`,
+  `git:git@github.com:${user}/${repo}.git`,
   `https://github.com/${user}/${repo}`,
   `https://github.com/${user}/${repo}.git`,
-  `github.com/${user}/${repo}`
+  `github.com/${user}/${repo}`,
+  `github:${user}/${repo}`,
+  `${user}/${repo}`
 ];
 
 // Read desired packages
@@ -37,7 +40,7 @@ try {
 }
 
 // Find packages to install and remove (excluding own repo)
-const toInstall = desiredPackages.filter(p => !currentPackages.includes(p));
+const toInstall = desiredPackages.filter(p => !currentPackages.includes(p) && !ownIdentifiers.includes(p));
 const toRemove = currentPackages.filter(p => 
   !desiredPackages.includes(p) && 
   !ownIdentifiers.includes(p)

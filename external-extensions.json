@@ -1,5 +1,6 @@
 [
   "npm:pi-caveman",
   "npm:pi-observational-memory",
-  "npm:@juicesharp/rpiv-ask-user-question"
+  "npm:@juicesharp/rpiv-ask-user-question",
+  "github:potentialdiffer/pi-agent-stuff"
 ]

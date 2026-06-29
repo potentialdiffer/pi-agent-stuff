@@ -1,11 +1,12 @@
 import type { ExtensionAPI, ExtensionContext, InputEvent } from "@earendil-works/pi-coding-agent";
-import { registerImageGenerationTool, registerWebsearchTool } from "./tools/index.js";
+import { registerImageGenerationTool, registerWebsearchTool, registerOcrTool } from "./tools/index.js";
 import { 
   registerSetupCommands, 
   registerStatusCommands, 
   registerGenerateCommands,
   registerExploreImagesCommand,
-  registerWebsearchCommands
+  registerWebsearchCommands,
+  registerOcrCommands
 } from "./commands/index.js";
 import { isConfigured, getApiKey } from "./modules/index.js";
 import { clearAgentCache, clearWebsearchAgentCache, cleanupTempImages, continueWebsearchConversation, extractWebsearchResults } from "./modules/index.js";
@@ -136,6 +137,9 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
   // Register the websearch tool
   registerWebsearchTool(pi);
 
+  // Register the OCR tool
+  registerOcrTool(pi);
+
   // ========================================================================
   // Register Commands
   // ========================================================================
@@ -154,6 +158,9 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
 
   // Websearch commands
   registerWebsearchCommands(pi);
+
+  // OCR commands
+  registerOcrCommands(pi);
 
   // ========================================================================
   // Tool Events
@@ -176,9 +183,9 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
   // Intercept tool calls for logging
   pi.on("tool_call", async (event, ctx) => {
     if (event.toolName === "mistral_generate_image") {
-      debugLog(`Image generation called: ${event.input.prompt?.substring(0, 50)}...`);
+      debugLog(`Image generation called: ${String(event.input?.prompt || "").substring(0, 50)}...`);
     } else if (event.toolName === "mistral_websearch") {
-      debugLog(`Websearch called: ${event.input.query?.substring(0, 50)}...`);
+      debugLog(`Websearch called: ${String(event.input?.query || "").substring(0, 50)}...`);
     }
   });
 

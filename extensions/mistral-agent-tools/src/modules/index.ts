@@ -6,3 +6,4 @@ export * from "./image-display.js";
 export * from "./image-explorer.js";
 export * from "./websearch-manager.js";
 export * from "./websearch-display.js";
+export * from "./ocr-manager.js";

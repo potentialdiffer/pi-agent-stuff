@@ -2,6 +2,7 @@
 // OCR Tool for Mistral OCR document processing
 // ============================================================================
 
+import { Type } from "typebox";
 import { getApiKey } from "../modules/auth.js";
 import { debugLog } from "../config/constants.js";
 import { processDocument } from "../modules/ocr-manager.js";
@@ -16,16 +17,12 @@ function parseDocumentInput(document) {
 
 export function createOcrTool(pi) {
   return {
-    name: "mistral_ocr",
-    label: "Mistral OCR",
+    name: "ocr",
+    label: "OCR",
     description: "Extract text from PDFs and images using Mistral OCR",
-    parameters: {
-      type: "object",
-      properties: {
-        document: { type: "string", description: "Document: URL, file path, or base64 string (prefix with 'base64:')" },
-      },
-      required: ["document"],
-    },
+    parameters: Type.Object({
+      document: Type.String({ description: "Document: URL, file path, or base64 string (prefix with 'base64:')" }),
+    }),
 
     async execute(toolCallId, params, signal, onUpdate, ctx) {
       try {

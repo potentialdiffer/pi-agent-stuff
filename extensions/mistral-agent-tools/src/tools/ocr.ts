@@ -18,7 +18,7 @@ function parseDocumentInput(document) {
 
 export function createOcrTool(pi: ExtensionAPI) {
   return {
-    name: "mistral_ocr",
+    name: "ocr",
     label: "OCR",
     description: "Extract text from PDFs and images using Mistral OCR",
     promptSnippet: "Extract text from documents and images using OCR",

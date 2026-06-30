@@ -176,7 +176,7 @@ function parseOcrResponse(response, processingTimeMs) {
     let fullText = "";
     for (let i = 0; i < response.length; i++) {
       const page = response[i];
-      const pageText = page.markdown || page.text || "";
+      const pageText = String(page.markdown || page.text || "");
       fullText += pageText + "\n\n";
       result.pages.push({
         page_number: i + 1,
@@ -193,12 +193,12 @@ function parseOcrResponse(response, processingTimeMs) {
     result.metadata.page_count = response.length;
     result.metadata.document_type = response.length > 1 ? "multi-page" : "single-page";
   } else if (response.text) {
-    result.text = response.text;
-    result.pages = [{ page_number: 1, text: response.text }];
+    result.text = String(response.text);
+    result.pages = [{ page_number: 1, text: String(response.text) }];
     result.metadata.page_count = 1;
   } else if (response.markdown) {
-    result.text = response.markdown;
-    result.pages = [{ page_number: 1, text: response.markdown }];
+    result.text = String(response.markdown);
+    result.pages = [{ page_number: 1, text: String(response.markdown) }];
     result.metadata.page_count = 1;
   }
   
@@ -211,12 +211,15 @@ function parseOcrResponse(response, processingTimeMs) {
     }));
   }
   
-  if (result.pages && !result.text) result.text = result.pages.map(p => p.text).join("\n\n");
+  if (result.pages && !result.text) result.text = result.pages.map(p => String(p.text)).join("\n\n");
   if (!result.pages && result.text) {
-    result.pages = [{ page_number: 1, text: result.text }];
+    result.pages = [{ page_number: 1, text: String(result.text) }];
     result.metadata.page_count = 1;
   }
   
+  // Ensure result.text is always a string
+  result.text = String(result.text || "");
+
   return result;
 }
 

@@ -154,7 +154,7 @@ export function createWebsearchTool(pi: ExtensionAPI) {
         const result = extractWebsearchResults(finalConversation);
         
         // Cache the conversation if it has an ID
-        if (result.conversationId && !finalConversation.conversationId.startsWith('conv_')) {
+        if (result.conversationId && finalConversation.conversationId && !String(finalConversation.conversationId).startsWith('conv_')) {
           // Already cached in startWebsearchConversation
         }
         

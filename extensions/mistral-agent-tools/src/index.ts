@@ -257,7 +257,7 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
       const isShortQuery = inputText.length < 200;
       
       if (isQuestion || isShortQuery) {
-        debugLog(`Auto-continuing websearch conversation ${lastWebsearchConversationId.substring(0, 20)}... with: ${inputText.substring(0, 50)}`);
+        debugLog(`Auto-continuing websearch conversation ${String(lastWebsearchConversationId).substring(0, 20)}... with: ${String(inputText).substring(0, 50)}`);
         
         try {
           // Check if configured

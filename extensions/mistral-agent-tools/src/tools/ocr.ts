@@ -3,6 +3,7 @@
 // ============================================================================
 
 import { Type } from "typebox";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { getApiKey } from "../modules/auth.ts";
 import { debugLog } from "../config/constants.ts";
 import { processDocument } from "../modules/ocr-manager.ts";
@@ -15,7 +16,7 @@ function parseDocumentInput(document) {
   return { type: "file", value: docStr };
 }
 
-export function createOcrTool(pi) {
+export function createOcrTool(pi: ExtensionAPI) {
   return {
     name: "ocr",
     label: "OCR",
@@ -24,7 +25,7 @@ export function createOcrTool(pi) {
       document: Type.String({ description: "Document: URL, file path, or base64 string (prefix with 'base64:')" }),
     }),
 
-    async execute(toolCallId, params, signal, onUpdate, ctx) {
+    async execute(toolCallId: string, params: any, signal: AbortSignal | undefined, onUpdate: any, ctx: any) {
       try {
         const doc = String(params.document);
         const apiKey = getApiKey();
@@ -43,6 +44,6 @@ export function createOcrTool(pi) {
   };
 }
 
-export function registerOcrTool(pi) {
+export function registerOcrTool(pi: ExtensionAPI): void {
   pi.registerTool(createOcrTool(pi));
 }

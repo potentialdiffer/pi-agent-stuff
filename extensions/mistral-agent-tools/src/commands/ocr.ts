@@ -35,9 +35,9 @@ async function handleOcrCommand(input, ctx, pi) {
       ? await processDocumentUrl(args.url, { model: args.model, table_format: args.tableFormat }, apiKey)
       : await processDocumentFile(args.file, { model: args.model, table_format: args.tableFormat }, apiKey);
     
-    const displayText = result.text.length > 5000 
-      ? result.text.substring(0, 5000) + "\n\n... (truncated)"
-      : result.text;
+    const displayText = String(result.text).length > 5000 
+      ? String(result.text).substring(0, 5000) + "\n\n... (truncated)"
+      : String(result.text);
     
     ctx.ui.notify(`Completed in ${Math.round((Date.now() - startTime) / 1000)}s`, "success");
     ctx.ui.addToChat({

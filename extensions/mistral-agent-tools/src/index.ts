@@ -131,14 +131,14 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
   // Register Tools
   // ========================================================================
 
+  // Register the OCR tool
+  registerOcrTool(pi);
+
   // Register the image generation tool
   registerImageGenerationTool(pi);
 
   // Register the websearch tool
   registerWebsearchTool(pi);
-
-  // Register the OCR tool
-  registerOcrTool(pi);
 
   // ========================================================================
   // Register Commands

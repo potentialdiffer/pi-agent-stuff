@@ -2,8 +2,8 @@ import { Mistral } from "@mistralai/mistralai";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import type { ToolFileChunk, MessageOutputEntry, ConversationResponse } from "@mistralai/mistralai/models/components/index.js";
-import { ImageGenerationError, GeneratedImage } from "../config/types.js";
-import { DEFAULT_CONFIG, getTempDir, getImagePath } from "../config/constants.js";
+import { ImageGenerationError, GeneratedImage } from "../config/types.ts";
+import { DEFAULT_CONFIG, getTempDir, getImagePath } from "../config/constants.ts";
 
 // ============================================================================
 // Image Downloader Module

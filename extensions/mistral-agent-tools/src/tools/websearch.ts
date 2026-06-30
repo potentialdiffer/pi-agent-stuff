@@ -5,15 +5,15 @@
 
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
-import { getApiKey } from "../modules/auth.js";
-import { DEFAULT_CONFIG, debugLog } from "../config/constants.js";
-import { clearLastWebsearchConversation, setLastWebsearchConversation } from "../index.js";
+import { getApiKey } from "../modules/auth.ts";
+import { DEFAULT_CONFIG, debugLog } from "../config/constants.ts";
+import { clearLastWebsearchConversation, setLastWebsearchConversation } from "../index.ts";
 import {
   startWebsearchConversation,
   pollWebsearchConversation,
   extractWebsearchResults,
-} from "../modules/websearch-manager.js";
-import { formatWithMarkdown } from "../modules/websearch-display.js";
+} from "../modules/websearch-manager.ts";
+import { formatWithMarkdown } from "../modules/websearch-display.ts";
 import { Text, Container, Spacer } from "@earendil-works/pi-tui";
 
 // ============================================================================

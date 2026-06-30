@@ -1,8 +1,8 @@
 import { Mistral } from "@mistralai/mistralai";
 import type { ConversationResponse, MessageOutputEntry, ToolFileChunk } from "@mistralai/mistralai/models/components/index.js";
-import { ImageGenerationParams, ImageGenerationError } from "../config/types.js";
-import { DEFAULT_CONFIG } from "../config/constants.js";
-import { getApiKey } from "../modules/auth.js";
+import { ImageGenerationParams, ImageGenerationError } from "../config/types.ts";
+import { DEFAULT_CONFIG } from "../config/constants.ts";
+import { getApiKey } from "../modules/auth.ts";
 
 // ============================================================================
 // Conversation Manager Module

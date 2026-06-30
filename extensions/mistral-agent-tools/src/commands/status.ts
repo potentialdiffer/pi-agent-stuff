@@ -1,8 +1,8 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { isConfigured, getApiKey, getBaseUrl, createMistralClient } from "../modules/auth.js";
-import { listAgents, getCacheStats, clearAgentCache } from "../modules/agent-manager.js";
-import { getWebsearchAgentCacheStats } from "../modules/websearch-manager.js";
-import { DEFAULT_CONFIG } from "../config/constants.js";
+import { isConfigured, getApiKey, getBaseUrl, createMistralClient } from "../modules/auth.ts";
+import { listAgents, getCacheStats, clearAgentCache } from "../modules/agent-manager.ts";
+import { getWebsearchAgentCacheStats } from "../modules/websearch-manager.ts";
+import { DEFAULT_CONFIG } from "../config/constants.ts";
 
 // ============================================================================
 // Status Command

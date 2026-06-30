@@ -1,6 +1,6 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { isConfigured, getApiKey } from "../modules/auth.js";
-import { DEFAULT_CONFIG } from "../config/constants.js";
+import { isConfigured, getApiKey } from "../modules/auth.ts";
+import { DEFAULT_CONFIG } from "../config/constants.ts";
 
 // ============================================================================
 // Generate Command

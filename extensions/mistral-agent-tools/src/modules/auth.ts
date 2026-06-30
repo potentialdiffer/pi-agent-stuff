@@ -2,8 +2,8 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 import { Mistral } from "@mistralai/mistralai";
-import { getAuthFilePath, debugLog, debugVerbose } from "../config/constants.js";
-import { MistralAuthError, ConfigurationError } from "../config/types.js";
+import { getAuthFilePath, debugLog, debugVerbose } from "../config/constants.ts";
+import { MistralAuthError, ConfigurationError } from "../config/types.ts";
 
 debugLog("Auth module loaded");
 

@@ -6,8 +6,8 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
-import { createMistralClient, getApiKey } from "./auth.js";
-import { debugLog, debugVerbose } from "../config/constants.js";
+import { createMistralClient, getApiKey } from "./auth.ts";
+import { debugLog, debugVerbose } from "../config/constants.ts";
 
 // ============================================================================
 // Configuration

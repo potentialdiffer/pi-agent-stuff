@@ -1,7 +1,7 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import { Mistral } from "@mistralai/mistralai";
-import { ImageGenerationParams, ImageGenerationResult, ImageGenerationError } from "../config/index.js";
+import { ImageGenerationParams, ImageGenerationResult, ImageGenerationError } from "../config/index.ts";
 import { 
   getApiKey, 
   createMistralClient,
@@ -12,8 +12,8 @@ import {
   formatImageForDisplay,
   formatImagesForDisplay,
   createImageSummary
-} from "../modules/index.js";
-import { DEFAULT_CONFIG } from "../config/index.js";
+} from "../modules/index.ts";
+import { DEFAULT_CONFIG } from "../config/index.ts";
 import { Image, Container, Text, Spacer } from "@earendil-works/pi-tui";
 
 // ============================================================================

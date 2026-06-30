@@ -3,7 +3,7 @@
 // Formats websearch results for pi TUI display
 // ============================================================================
 
-import type { WebsearchReference, WebsearchResult } from "./websearch-manager.js";
+import type { WebsearchReference, WebsearchResult } from "./websearch-manager.ts";
 
 // ============================================================================
 // Display Formatting

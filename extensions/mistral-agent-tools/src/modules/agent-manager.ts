@@ -1,7 +1,7 @@
 import { Mistral } from "@mistralai/mistralai";
-import { AgentCacheEntry, ImageGenerationError } from "../config/types.js";
-import { DEFAULT_CONFIG } from "../config/constants.js";
-import { createMistralClient, getApiKey } from "./auth.js";
+import { AgentCacheEntry, ImageGenerationError } from "../config/types.ts";
+import { DEFAULT_CONFIG } from "../config/constants.ts";
+import { createMistralClient, getApiKey } from "./auth.ts";
 
 // ============================================================================
 // Agent Manager Module

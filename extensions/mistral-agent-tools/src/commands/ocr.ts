@@ -2,8 +2,8 @@
 // OCR Commands
 // ============================================================================
 
-import { getApiKey, isConfigured } from "../modules/auth.js";
-import { processDocumentUrl, processDocumentFile, clearOcrCache, getOcrCacheStats, getSupportedDocumentTypes } from "../modules/ocr-manager.js";
+import { getApiKey, isConfigured } from "../modules/auth.ts";
+import { processDocumentUrl, processDocumentFile, clearOcrCache, getOcrCacheStats, getSupportedDocumentTypes } from "../modules/ocr-manager.ts";
 
 async function handleOcrCommand(input, ctx, pi) {
   if (!isConfigured()) {

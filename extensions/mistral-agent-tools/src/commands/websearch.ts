@@ -4,8 +4,8 @@
 // ============================================================================
 
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { isConfigured, getApiKey } from "../modules/auth.js";
-import { DEFAULT_CONFIG, debugLog } from "../config/constants.js";
+import { isConfigured, getApiKey } from "../modules/auth.ts";
+import { DEFAULT_CONFIG, debugLog } from "../config/constants.ts";
 import {
   startWebsearchConversation,
   continueWebsearchConversation,
@@ -17,9 +17,9 @@ import {
   clearAllWebsearchConversations,
   listWebsearchConversations,
   getCachedWebsearchConversation,
-} from "../modules/websearch-manager.js";
-import { formatWebsearchResult } from "../modules/websearch-display.js";
-import { clearLastWebsearchConversation, setLastWebsearchConversation } from "../index.js";
+} from "../modules/websearch-manager.ts";
+import { formatWebsearchResult } from "../modules/websearch-display.ts";
+import { clearLastWebsearchConversation, setLastWebsearchConversation } from "../index.ts";
 
 // ============================================================================
 // Websearch Command

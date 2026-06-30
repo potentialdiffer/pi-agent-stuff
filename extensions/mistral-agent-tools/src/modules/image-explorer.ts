@@ -2,9 +2,9 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 import { Image, Container, Text, Spacer, Box } from "@earendil-works/pi-tui";
-import { formatImageForDisplay } from "./image-display.js";
-import { GeneratedImage } from "../config/types.js";
-import { getPiImagePath } from "../config/constants.js";
+import { formatImageForDisplay } from "./image-display.ts";
+import { GeneratedImage } from "../config/types.ts";
+import { getPiImagePath } from "../config/constants.ts";
 
 // ============================================================================
 // Image Explorer Module

@@ -1,9 +1,9 @@
 import type { ExtensionAPI, ExtensionCommandContext, Theme } from "@earendil-works/pi-coding-agent";
 import { SelectList, type SelectItem, type SelectListTheme, Image, type Component, matchesKey } from "@earendil-works/pi-tui";
 import * as fs from "node:fs";
-import { getImageFiles, ImageFileInfo } from "../modules/image-explorer.js";
-import { formatImageForDisplay, createImagePreviewFromPath } from "../modules/image-display.js";
-import { GeneratedImage } from "../config/types.js";
+import { getImageFiles, ImageFileInfo } from "../modules/image-explorer.ts";
+import { formatImageForDisplay, createImagePreviewFromPath } from "../modules/image-display.ts";
+import { GeneratedImage } from "../config/types.ts";
 
 // ============================================================================
 // Image Display Overlay Component

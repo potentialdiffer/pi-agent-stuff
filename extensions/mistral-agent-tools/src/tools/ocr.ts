@@ -3,9 +3,9 @@
 // ============================================================================
 
 import { Type } from "typebox";
-import { getApiKey } from "../modules/auth.js";
-import { debugLog } from "../config/constants.js";
-import { processDocument } from "../modules/ocr-manager.js";
+import { getApiKey } from "../modules/auth.ts";
+import { debugLog } from "../config/constants.ts";
+import { processDocument } from "../modules/ocr-manager.ts";
 
 function parseDocumentInput(document) {
   if (!document) throw new Error("Document input required");

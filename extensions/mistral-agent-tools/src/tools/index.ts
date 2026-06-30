@@ -1,3 +1,3 @@
-export * from "./image-generation.js";
-export * from "./websearch.js";
-export * from "./ocr.js";
+export * from "./image-generation.ts";
+export * from "./websearch.ts";
+export * from "./ocr.ts";

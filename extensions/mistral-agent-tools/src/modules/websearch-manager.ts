@@ -4,9 +4,9 @@
 // ============================================================================
 
 import type { Agent, ConversationResponse, MessageOutputEntry, ToolExecutionEntry, ModelConversation, AgentConversation, ConversationHistory } from "@mistralai/mistralai/models/components/index.js";
-import { DEFAULT_CONFIG, debugLog, debugVerbose } from "../config/constants.js";
-import { createMistralClient } from "./auth.js";
-import { ConfigurationError, MistralApiError, WebsearchError } from "../config/types.js";
+import { DEFAULT_CONFIG, debugLog, debugVerbose } from "../config/constants.ts";
+import { createMistralClient } from "./auth.ts";
+import { ConfigurationError, MistralApiError, WebsearchError } from "../config/types.ts";
 
 // ============================================================================
 // Types

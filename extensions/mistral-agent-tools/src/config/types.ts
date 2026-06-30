@@ -101,35 +101,47 @@ export class MistralAuthError extends Error {
 }
 
 export class MistralApiError extends Error {
+  statusCode?: number;
+  details?: any;
   constructor(
     message: string,
-    public readonly statusCode?: number,
-    public readonly details?: any
+    statusCode?: number,
+    details?: any
   ) {
     super(message);
     this.name = "MistralApiError";
+    this.statusCode = statusCode;
+    this.details = details;
   }
 }
 
 export class ImageGenerationError extends Error {
+  phase: "agent_creation" | "conversation_start" | "file_extraction" | "download";
+  retryable: boolean;
   constructor(
     message: string,
-    public readonly phase: "agent_creation" | "conversation_start" | "file_extraction" | "download",
-    public readonly retryable: boolean = false
+    phase: "agent_creation" | "conversation_start" | "file_extraction" | "download",
+    retryable: boolean = false
   ) {
     super(message);
     this.name = "ImageGenerationError";
+    this.phase = phase;
+    this.retryable = retryable;
   }
 }
 
 export class WebsearchError extends Error {
+  phase: "agent_creation" | "conversation_start" | "polling" | "result_extraction";
+  retryable: boolean;
   constructor(
     message: string,
-    public readonly phase: "agent_creation" | "conversation_start" | "polling" | "result_extraction",
-    public readonly retryable: boolean = false
+    phase: "agent_creation" | "conversation_start" | "polling" | "result_extraction",
+    retryable: boolean = false
   ) {
     super(message);
     this.name = "WebsearchError";
+    this.phase = phase;
+    this.retryable = retryable;
   }
 }
 

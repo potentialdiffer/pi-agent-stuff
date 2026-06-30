@@ -1,5 +1,5 @@
-import { GeneratedImage } from "../config/types.js";
-import { DEFAULT_CONFIG, getPiImagePath } from "../config/constants.js";
+import { GeneratedImage } from "../config/types.ts";
+import { DEFAULT_CONFIG, getPiImagePath } from "../config/constants.ts";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { Image, type Component } from "@earendil-works/pi-tui";

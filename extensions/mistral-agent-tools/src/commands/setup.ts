@@ -1,6 +1,6 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { validateApiKey, saveApiKey, isConfigured, removeApiKey } from "../modules/auth.js";
-import { DEFAULT_CONFIG } from "../config/constants.js";
+import { validateApiKey, saveApiKey, isConfigured, removeApiKey } from "../modules/auth.ts";
+import { DEFAULT_CONFIG } from "../config/constants.ts";
 
 // ============================================================================
 // Setup Command

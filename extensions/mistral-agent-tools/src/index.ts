@@ -1,5 +1,5 @@
 import type { ExtensionAPI, ExtensionContext, InputEvent } from "@earendil-works/pi-coding-agent";
-import { registerImageGenerationTool, registerWebsearchTool, registerOcrTool } from "./tools/index.js";
+import { registerImageGenerationTool, registerWebsearchTool, registerOcrTool } from "./tools/index.ts";
 import { 
   registerSetupCommands, 
   registerStatusCommands, 
@@ -7,11 +7,11 @@ import {
   registerExploreImagesCommand,
   registerWebsearchCommands,
   registerOcrCommands
-} from "./commands/index.js";
-import { isConfigured, getApiKey } from "./modules/index.js";
-import { clearAgentCache, clearWebsearchAgentCache, cleanupTempImages, continueWebsearchConversation, extractWebsearchResults } from "./modules/index.js";
-import { formatWebsearchResult } from "./modules/websearch-display.js";
-import { DEFAULT_CONFIG, debugLog } from "./config/index.js";
+} from "./commands/index.ts";
+import { isConfigured, getApiKey } from "./modules/index.ts";
+import { clearAgentCache, clearWebsearchAgentCache, cleanupTempImages, continueWebsearchConversation, extractWebsearchResults } from "./modules/index.ts";
+import { formatWebsearchResult } from "./modules/websearch-display.ts";
+import { DEFAULT_CONFIG, debugLog } from "./config/index.ts";
 
 // ============================================================================
 // Mistral Agent Tools Extension
@@ -318,7 +318,4 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
 }
 
 // Export for testing
-export {
-  mistralImageExtension as default,
-  mistralImageExtension,
-};
+export { mistralImageExtension };

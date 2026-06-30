@@ -3,7 +3,8 @@
 // ============================================================================
 
 import { Type } from "typebox";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { Text, Container, Spacer } from "@earendil-works/pi-tui";
 import { getApiKey } from "../modules/auth.ts";
 import { debugLog } from "../config/constants.ts";
 import { processDocument } from "../modules/ocr-manager.ts";
@@ -21,6 +22,12 @@ export function createOcrTool(pi: ExtensionAPI) {
     name: "ocr",
     label: "OCR",
     description: "Extract text from PDFs and images using Mistral OCR",
+    promptSnippet: "Extract text from documents and images using OCR",
+    promptGuidelines: [
+      "Use ocr when user provides a document (PDF, image) and asks for text extraction.",
+      "Specify the document as URL, file path, or base64-encoded string.",
+      "Prefix base64 strings with 'base64:'.",
+    ],
     parameters: Type.Object({
       document: Type.String({ description: "Document: URL, file path, or base64 string (prefix with 'base64:')" }),
     }),
@@ -40,6 +47,24 @@ export function createOcrTool(pi: ExtensionAPI) {
       } catch (error) {
         return { content: [{ type: "text", text: `OCR failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
       }
+    },
+
+    renderResult(result: any, _options: any, theme: any, _ctx: ExtensionContext) {
+      const container = new Container();
+      
+      // Handle error case
+      if (result.isError) {
+        return new Text(theme.fg("error", "❌ " + (result.content[0]?.text || "OCR failed")), 1, 1);
+      }
+      
+      // Add the main text content
+      const textContent = result.content.find((c: any) => c.type === "text");
+      if (textContent && textContent.text) {
+        container.addChild(new Text(textContent.text, 1, 0));
+        container.addChild(new Spacer(1));
+      }
+      
+      return container;
     },
   };
 }

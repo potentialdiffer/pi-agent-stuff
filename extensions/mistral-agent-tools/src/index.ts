@@ -173,9 +173,9 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
       const conversationId = event.details?.conversationId;
       const model = event.details?.model;
       if (conversationId) {
-        lastWebsearchConversationId = conversationId;
+        lastWebsearchConversationId = String(conversationId);
         lastWebsearchModel = model || DEFAULT_CONFIG.DEFAULT_WEBSEARCH_MODEL;
-        debugLog(`Stored conversation ID for follow-up: ${conversationId.substring(0, 20)}...`);
+        debugLog(`Stored conversation ID for follow-up: ${String(conversationId).substring(0, 20)}...`);
       }
     }
   });
@@ -216,7 +216,8 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
   // Could intercept user input to auto-detect image generation requests
   pi.on("input", async (event: InputEvent, ctx: ExtensionContext) => {
     // Check if input looks like an image generation request
-    const lowerInput = event.text.toLowerCase();
+    const inputText = String(event.text || "");
+    const lowerInput = inputText.toLowerCase();
     
     const imagePatterns = [
       /^\/(mistral-)?image\s+/, // /image or /mistral-image
@@ -235,29 +236,29 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
 
     for (const pattern of imagePatterns) {
       if (pattern.test(lowerInput)) {
-        debugLog(`Detected image request: ${event.text.substring(0, 50)}...`);
+        debugLog(`Detected image request: ${inputText.substring(0, 50)}...`);
         break;
       }
     }
 
     for (const pattern of websearchPatterns) {
       if (pattern.test(lowerInput)) {
-        debugLog(`Detected websearch request: ${event.text.substring(0, 50)}...`);
+        debugLog(`Detected websearch request: ${inputText.substring(0, 50)}...`);
         break;
       }
     }
 
     // Auto-continue websearch conversation for follow-up questions
     // Only trigger for user input (not agent output or other sources)
-    if (lastWebsearchConversationId && event.source === "interactive" && !event.text.startsWith("/") && event.text.trim()) {
-      const inputText = event.text.trim();
+    if (lastWebsearchConversationId && event.source === "interactive" && !inputText.startsWith("/") && inputText.trim()) {
+      const trimmedInput = inputText.trim();
       
       // Check if this looks like a follow-up question (not a command)
-      const isQuestion = /^\?|what|how|who|where|when|why|can you|tell me|explain|more about|follow up/i.test(inputText.toLowerCase());
-      const isShortQuery = inputText.length < 200;
+      const isQuestion = /^\?|what|how|who|where|when|why|can you|tell me|explain|more about|follow up/i.test(trimmedInput.toLowerCase());
+      const isShortQuery = trimmedInput.length < 200;
       
       if (isQuestion || isShortQuery) {
-        debugLog(`Auto-continuing websearch conversation ${String(lastWebsearchConversationId).substring(0, 20)}... with: ${String(inputText).substring(0, 50)}`);
+        debugLog(`Auto-continuing websearch conversation ${String(lastWebsearchConversationId).substring(0, 20)}... with: ${String(trimmedInput).substring(0, 50)}`);
         
         try {
           // Check if configured
@@ -271,7 +272,7 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
           // Continue the conversation
           const { conversation, agentId } = await continueWebsearchConversation(
             lastWebsearchConversationId,
-            { query: inputText, model },
+            { query: trimmedInput, model },
             apiKey
           );
           

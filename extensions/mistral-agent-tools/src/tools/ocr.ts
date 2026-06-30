@@ -22,8 +22,17 @@ export function createOcrTool(pi: ExtensionAPI) {
     label: "OCR",
     description: "Extract text from PDFs and images using Mistral OCR",
     promptSnippet: "Extract text from documents and images using OCR",
+    promptGuidelines: [
+      "Use mistral_ocr when user provides a document (PDF, image) and asks for text extraction.",
+      "Specify the document as URL, file path, or base64-encoded string.",
+      "Prefix base64 strings with 'base64:'.",
+    ],
     parameters: Type.Object({
-      document: Type.String({ description: "Document: URL, file path, or base64 string (prefix with 'base64:')" }),
+      document: Type.String({
+        description: "Document: URL, file path, or base64 string (prefix with 'base64:')",
+        minLength: 1,
+        maxLength: 10000,
+      }),
     }),
 
     async execute(toolCallId: string, params: any, signal: AbortSignal | undefined, onUpdate: any, ctx: any) {

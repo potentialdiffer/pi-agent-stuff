@@ -4,14 +4,20 @@
   "description": "pi extension that displays status information of current directory with git information",
   "main": "index.ts",
   "pi": {
-    "extensions": ["./index.ts"]
+    "extensions": [
+      "./index.ts"
+    ]
   },
   "keywords": [
     "pi",
     "extension",
     "git",
-    "status"
+    "status",
+    "mistral"
   ],
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
   "author": "",
   "license": "MIT"
 }

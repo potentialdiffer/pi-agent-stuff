@@ -2,10 +2,10 @@
 // OCR Tool for Mistral OCR document processing
 // ============================================================================
 
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { getApiKey } from "../modules/auth.ts";
-import { debugLog } from "../config/constants.ts";
+import { DEFAULT_CONFIG, debugLog } from "../config/constants.ts";
 import { processDocument } from "../modules/ocr-manager.ts";
 
 function parseDocumentInput(document) {
@@ -33,7 +33,12 @@ export function createOcrTool(pi: ExtensionAPI) {
       }),
     }),
 
-    async execute(toolCallId: string, params: any, signal: AbortSignal | undefined, onUpdate: any, ctx: any) {
+    async execute(
+      toolCallId: string, 
+      params: any, 
+      signal: AbortSignal | undefined, 
+      onUpdate: ((update: { content: Array<{ type: string; text?: string }> }) => void) | undefined,
+      ctx: ExtensionContext) {
       try {
         const doc = String(params?.document || "");
         if (!doc) throw new Error("Document parameter is required");
@@ -54,5 +59,6 @@ export function createOcrTool(pi: ExtensionAPI) {
 }
 
 export function registerOcrTool(pi: ExtensionAPI): void {
-  pi.registerTool(createOcrTool(pi));
+  const tool = createOcrTool(pi);
+  pi.registerTool(tool);
 }

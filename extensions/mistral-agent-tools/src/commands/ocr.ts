@@ -4,7 +4,13 @@
 
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { getApiKey, isConfigured } from "../modules/auth.ts";
-import { processDocumentUrl, processDocumentFile, clearOcrCache, getOcrCacheStats, getSupportedDocumentTypes } from "../modules/ocr-manager.ts";
+import { DEFAULT_CONFIG, debugLog } from "../config/constants.ts";
+import {
+  processDocumentUrl,
+  processDocumentFile,
+  clearOcrCache, getOcrCacheStats,
+  getSupportedDocumentTypes
+} from "../modules/ocr-manager.ts";
 
 async function handleOcrCommand(input: string, ctx: ExtensionCommandContext, pi: ExtensionAPI) {
   if (!isConfigured()) {
@@ -98,34 +104,45 @@ async function handleTypes(_input: string, ctx: ExtensionCommandContext) {
 export function registerOcrCommands(pi: ExtensionAPI): void {
   pi.registerCommand({
     name: "mistral-ocr",
+    prompt: "Process document with Mistral OCR",
     description: "Process document with Mistral OCR",
-    usage: "/mistral-ocr <url|file> [--model <model>] [--table-format <format>]",
-    examples: [
-      "/mistral-ocr https://example.com/doc.pdf",
-      "/mistral-ocr /path/to/file.pdf",
-      "/mistral-ocr ./doc.pdf --table-format markdown",
-    ],
+    getArgumentCompletions: (prefix: string) => {
+      // No completions for query
+      return null;
+    },
     handler: (input, ctx) => handleOcrCommand(input, ctx, pi),
   });
 
   pi.registerCommand({
     name: "mistral-ocr-cache-clear",
+    prompt: "Clear OCR cache",
     description: "Clear OCR cache",
-    usage: "/mistral-ocr-cache-clear",
+    getArgumentCompletions: (prefix: string) => {
+      // No completions for query
+      return null;
+    },
     handler: handleCacheClear,
   });
 
   pi.registerCommand({
     name: "mistral-ocr-cache-stats",
+    prompt: "Show OCR cache stats",
     description: "Show OCR cache stats",
-    usage: "/mistral-ocr-cache-stats",
+    getArgumentCompletions: (prefix: string) => {
+      // No completions for query
+      return null;
+    },
     handler: handleCacheStats,
   });
 
   pi.registerCommand({
     name: "mistral-ocr-types",
+    prompt: "Show supported document types",
     description: "Show supported document types",
-    usage: "/mistral-ocr-types",
+    getArgumentCompletions: (prefix: string) => {
+      // No completions for query
+      return null;
+    },
     handler: handleTypes,
   });
 }

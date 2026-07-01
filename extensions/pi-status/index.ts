@@ -204,7 +204,13 @@ export default function (pi: ExtensionAPI) {
 
 	function scheduleUpdate() {
 		if (updateTimeout) clearTimeout(updateTimeout);
-		updateTimeout = setTimeout(() => updateGitInfo(currentCwd), 5000);
+		updateTimeout = setTimeout(() => {
+			updateGitInfo(currentCwd);
+			// Also update Mistral usage periodically if Mistral model is active
+			if (config.mistralApiKey) {
+				getMistralUsage().catch(() => {});
+			}
+		}, 5000);
 	}
 
 	pi.on("session_start", async (_event, ctx) => {
@@ -280,11 +286,12 @@ export default function (pi: ExtensionAPI) {
 					// Check if using Mistral model and show Vibe usage percentage
 					const isMistralModel = ctx.model?.provider === "mistral";
 					if (isMistralModel && config.mistralApiKey) {
-						const usage = await getMistralUsage();
-						if (usage !== null) {
-							parts.push(`${tokenStats} ${usage}%`);
+						// Use cached usage value (updated in session_start and periodically)
+						// We can't await here as render must be synchronous
+						if (mistralUsage !== null) {
+							parts.push(`${tokenStats} ${mistralUsage}%`);
 						} else {
-							// Fallback to cost display if usage fetch failed
+							// Fallback to cost display if usage not available
 							parts.push(`${tokenStats}${cost > 0 ? ` $${cost.toFixed(3)}` : ''}`);
 						}
 					} else {

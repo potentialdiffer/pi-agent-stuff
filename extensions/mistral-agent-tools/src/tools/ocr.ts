@@ -4,6 +4,7 @@
 
 import { Type } from "typebox";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { DEFAULT_CONFIG } from "../config/constants.ts";
 import { getApiKey } from "../modules/auth.ts";
 import { debugLog } from "../config/constants.ts";
 import { processDocument } from "../modules/ocr-manager.ts";
@@ -33,6 +34,12 @@ export function createOcrTool(pi: ExtensionAPI) {
         minLength: 1,
         maxLength: 10000,
       }),
+      model: Type.Optional(
+        Type.String({
+          description: "Mistral model to use for OCR",
+          default: DEFAULT_CONFIG.DEFAULT_OCR_MODEL || "mistral-ocr-latest",
+        })
+      ),
     }),
 
     async execute(toolCallId: string, params: any, signal: AbortSignal | undefined, onUpdate: any, ctx: any) {
@@ -42,9 +49,10 @@ export function createOcrTool(pi: ExtensionAPI) {
         if (!doc) throw new Error("Document parameter is required");
         const apiKey = getApiKey();
         const parsedDoc = parseDocumentInput(doc);
+        const model = params?.model || DEFAULT_CONFIG.DEFAULT_OCR_MODEL || "mistral-ocr-latest";
         const result = await processDocument({
           document: { type: parsedDoc.type, document_url: parsedDoc.type === "document_url" ? parsedDoc.value : undefined, base64: parsedDoc.type === "base64" ? parsedDoc.value : undefined, file_path: parsedDoc.type === "file" ? parsedDoc.value : undefined },
-          model: "mistral-ocr-latest",
+          model: String(model),
           table_format: "html",
           include_image_base64: false,
         }, apiKey);

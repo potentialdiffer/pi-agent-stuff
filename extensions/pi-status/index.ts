@@ -92,6 +92,9 @@ export default function (pi: ExtensionAPI) {
 
 					const parts: string[] = [];
 
+					// Add current working directory at the beginning
+					parts.push(theme.fg("dim", currentCwd || ""));
+
 					if (gitInfo) {
 						const { branch, clean, changes, staged, untracked } = gitInfo;
 						let gitStatus = theme.fg("accent", `🌿 ${branch}`);

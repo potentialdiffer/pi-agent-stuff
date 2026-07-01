@@ -102,8 +102,7 @@ async function handleTypes(_input: string, ctx: ExtensionCommandContext) {
 }
 
 export function registerOcrCommands(pi: ExtensionAPI): void {
-  pi.registerCommand({
-    name: "mistral-ocr",
+  pi.registerCommand("mistral-ocr", {
     prompt: "Process document with Mistral OCR",
     description: "Process document with Mistral OCR",
     getArgumentCompletions: (prefix: string) => {
@@ -115,8 +114,7 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     handler: (input, ctx) => handleOcrCommand(input, ctx, pi),
   });
 
-  pi.registerCommand({
-    name: "mistral-ocr-cache-clear",
+  pi.registerCommand("mistral-ocr-cache-clear", {
     prompt: "Clear OCR cache",
     description: "Clear OCR cache",
     getArgumentCompletions: (prefix: string) => {
@@ -128,8 +126,7 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     handler: handleCacheClear,
   });
 
-  pi.registerCommand({
-    name: "mistral-ocr-cache-stats",
+  pi.registerCommand("mistral-ocr-cache-stats", {
     prompt: "Show OCR cache stats",
     description: "Show OCR cache stats",
     getArgumentCompletions: (prefix: string) => {
@@ -141,8 +138,7 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     handler: handleCacheStats,
   });
 
-  pi.registerCommand({
-    name: "mistral-ocr-types",
+  pi.registerCommand("mistral-ocr-types", {
     prompt: "Show supported document types",
     description: "Show supported document types",
     getArgumentCompletions: (prefix: string) => {

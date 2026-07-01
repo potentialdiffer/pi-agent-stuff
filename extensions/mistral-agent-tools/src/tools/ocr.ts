@@ -45,9 +45,9 @@ export function createOcrTool(pi: ExtensionAPI) {
           table_format: "html",
           include_image_base64: false,
         }, apiKey);
-        return { content: [{ type: "text", text: result.text }] };
+        return { content: [{ type: "text", text: String(result.text || "") }] };
       } catch (error) {
-        return { content: [{ type: "text", text: `OCR failed: ${error instanceof Error ? error.message : String(error)}` }], isError: true };
+        return { content: [{ type: "text", text: `OCR failed: ${String(error || "")}` }], isError: true };
       }
     },
   };

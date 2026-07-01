@@ -35,10 +35,9 @@ export function createOcrTool(pi: ExtensionAPI) {
         if (!doc) throw new Error("Document parameter is required");
         const apiKey = getApiKey();
         const parsedDoc = parseDocumentInput(doc);
-        const model = params?.model || "mistral-ocr-latest";
         const result = await processDocument({
           document: { type: parsedDoc.type, document_url: parsedDoc.type === "document_url" ? parsedDoc.value : undefined, base64: parsedDoc.type === "base64" ? parsedDoc.value : undefined, file_path: parsedDoc.type === "file" ? parsedDoc.value : undefined },
-          model: String(model),
+          model: "mistral-ocr-latest",
           table_format: "html",
           include_image_base64: false,
         }, apiKey);

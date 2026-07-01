@@ -16,7 +16,7 @@ export function createGenerateCommand(pi: ExtensionAPI) {
     prompt: "Generate Image",
     getArgumentCompletions: (prefix: string) => {
       // Could provide prompt suggestions in the future
-      return null;
+      return [];
     },
     handler: async (args: string | undefined, ctx: ExtensionCommandContext) => {
       if (!args?.trim()) {

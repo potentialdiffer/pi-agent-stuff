@@ -34,7 +34,7 @@ export function createWebsearchCommand(pi: ExtensionAPI) {
     prompt: "Websearch",
     getArgumentCompletions: (prefix: string) => {
       // No completions for query
-      return null;
+      return [];
     },
     handler: async (args: string | undefined, ctx: ExtensionCommandContext) => {
       if (!args?.trim()) {
@@ -154,10 +154,12 @@ export function createWebsearchContinueCommand(pi: ExtensionAPI) {
     prompt: "Continue Websearch",
     getArgumentCompletions: (prefix: string) => {
       const conversations = listWebsearchConversations();
-      return conversations.map(c => ({
-        value: c.conversationId,
-        label: `${c.conversationId.substring(0, 20)}... - "${c.initialQuery.substring(0, 30)}${c.initialQuery.length > 30 ? "..." : ""}"`
-      }));
+      return conversations
+        .filter(c => typeof c.conversationId === 'string' && typeof c.initialQuery === 'string')
+        .map(c => ({
+          value: c.conversationId,
+          label: `${c.conversationId.substring(0, 20)}... - "${c.initialQuery.substring(0, 30)}${c.initialQuery.length > 30 ? "..." : ""}"`
+        }));
     },
     handler: async (args: string | undefined, ctx: ExtensionCommandContext) => {
       if (!args?.trim()) {
@@ -340,10 +342,12 @@ export function createWebsearchClearCommand(pi: ExtensionAPI) {
     prompt: "Clear Websearch Conversation",
     getArgumentCompletions: (prefix: string) => {
       const conversations = listWebsearchConversations();
-      return conversations.map(c => ({
-        value: c.conversationId,
-        label: `${c.conversationId.substring(0, 20)}... - "${c.initialQuery.substring(0, 30)}${c.initialQuery.length > 30 ? "..." : ""}"`
-      }));
+      return conversations
+        .filter(c => typeof c.conversationId === 'string' && typeof c.initialQuery === 'string')
+        .map(c => ({
+          value: c.conversationId,
+          label: `${c.conversationId.substring(0, 20)}... - "${c.initialQuery.substring(0, 30)}${c.initialQuery.length > 30 ? "..." : ""}"`
+        }));
     },
     handler: async (args: string | undefined, ctx: ExtensionCommandContext) => {
       if (!args?.trim()) {

@@ -150,6 +150,12 @@ export function cacheWebsearchConversation(
   model: string,
   initialQuery: string
 ): void {
+  // Validate conversationId is a string
+  if (typeof conversationId !== 'string' || conversationId.trim() === '') {
+    console.warn('[Mistral Websearch] Invalid conversationId, skipping cache:', conversationId);
+    return;
+  }
+
   // Enforce max cached conversations
   while (websearchConversationCache.size >= DEFAULT_CONFIG.MAX_CACHED_CONVERSATIONS) {
     // Remove oldest entry
@@ -172,7 +178,7 @@ export function cacheWebsearchConversation(
     model,
     createdAt: Date.now(),
     lastUsedAt: Date.now(),
-    initialQuery,
+    initialQuery: typeof initialQuery === 'string' ? initialQuery : '',
   });
 }
 

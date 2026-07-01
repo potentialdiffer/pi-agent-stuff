@@ -108,7 +108,7 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     description: "Process document with Mistral OCR",
     getArgumentCompletions: (prefix: string) => {
       // No completions for query
-      return null;
+      return [];
     },
     handler: (input, ctx) => handleOcrCommand(input, ctx, pi),
   });
@@ -119,7 +119,7 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     description: "Clear OCR cache",
     getArgumentCompletions: (prefix: string) => {
       // No completions for query
-      return null;
+      return [];
     },
     handler: handleCacheClear,
   });
@@ -130,7 +130,7 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     description: "Show OCR cache stats",
     getArgumentCompletions: (prefix: string) => {
       // No completions for query
-      return null;
+      return [];
     },
     handler: handleCacheStats,
   });
@@ -141,7 +141,7 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     description: "Show supported document types",
     getArgumentCompletions: (prefix: string) => {
       // No completions for query
-      return null;
+      return [];
     },
     handler: handleTypes,
   });

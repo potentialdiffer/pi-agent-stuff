@@ -186,6 +186,8 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
       debugLog(`Image generation called: ${String(event.input?.prompt || "").substring(0, 50)}...`);
     } else if (event.toolName === "mistral_websearch") {
       debugLog(`Websearch called: ${String(event.input?.query || "").substring(0, 50)}...`);
+    } else if (event.toolName === "ocr") {
+      debugLog(`OCR called: ${String(event.input?.document || "").substring(0, 50)}...`);
     }
   });
 

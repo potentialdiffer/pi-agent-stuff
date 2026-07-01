@@ -37,7 +37,9 @@ export function createOcrTool(pi: ExtensionAPI) {
 
     async execute(toolCallId: string, params: any, signal: AbortSignal | undefined, onUpdate: any, ctx: any) {
       try {
-        const doc = String(params.document);
+        debugLog(`OCR tool called with toolCallId: ${String(toolCallId || "")}`);
+        const doc = String(params?.document || "");
+        if (!doc) throw new Error("Document parameter is required");
         const apiKey = getApiKey();
         const parsedDoc = parseDocumentInput(doc);
         const result = await processDocument({

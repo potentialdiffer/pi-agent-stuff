@@ -2,10 +2,11 @@
 // OCR Commands
 // ============================================================================
 
+import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { getApiKey, isConfigured } from "../modules/auth.ts";
 import { processDocumentUrl, processDocumentFile, clearOcrCache, getOcrCacheStats, getSupportedDocumentTypes } from "../modules/ocr-manager.ts";
 
-async function handleOcrCommand(input, ctx, pi) {
+async function handleOcrCommand(input: string, ctx: ExtensionCommandContext, pi: ExtensionAPI) {
   if (!isConfigured()) {
     ctx.ui.notify("Mistral OCR: Not configured. Run /mistral-setup", "warning");
     return;
@@ -67,7 +68,7 @@ function parseOcrArguments(input) {
   return args;
 }
 
-async function handleCacheClear(_input, ctx) {
+async function handleCacheClear(_input: string, ctx: ExtensionCommandContext) {
   try {
     const before = getOcrCacheStats().size;
     clearOcrCache();
@@ -77,7 +78,7 @@ async function handleCacheClear(_input, ctx) {
   }
 }
 
-async function handleCacheStats(_input, ctx) {
+async function handleCacheStats(_input: string, ctx: ExtensionCommandContext) {
   try {
     const stats = getOcrCacheStats();
     ctx.ui.notify(`OCR Cache: ${stats.size} entries`, "info");
@@ -86,7 +87,7 @@ async function handleCacheStats(_input, ctx) {
   }
 }
 
-async function handleTypes(_input, ctx) {
+async function handleTypes(_input: string, ctx: ExtensionCommandContext) {
   try {
     ctx.ui.notify(`Supported types: ${getSupportedDocumentTypes().join(", ")}`, "info");
   } catch (error) {
@@ -94,7 +95,7 @@ async function handleTypes(_input, ctx) {
   }
 }
 
-export function registerOcrCommands(pi) {
+export function registerOcrCommands(pi: ExtensionAPI): void {
   pi.registerCommand({
     name: "mistral-ocr",
     description: "Process document with Mistral OCR",

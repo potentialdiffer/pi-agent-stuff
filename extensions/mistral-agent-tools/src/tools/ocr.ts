@@ -23,7 +23,7 @@ export function createOcrTool(pi: ExtensionAPI) {
     description: "Extract text from PDFs and images using Mistral OCR",
     promptSnippet: "Extract text from documents and images using OCR",
     promptGuidelines: [
-      "Use mistral_ocr when user provides a document (PDF, image) and asks for text extraction.",
+      "Use ocr when user provides a document (PDF, image) and asks for text extraction.",
       "Specify the document as URL, file path, or base64-encoded string.",
       "Prefix base64 strings with 'base64:'.",
     ],

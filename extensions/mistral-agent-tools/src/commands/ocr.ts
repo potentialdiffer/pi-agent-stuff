@@ -4,7 +4,7 @@
 
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { getApiKey, isConfigured } from "../modules/auth.ts";
-import { DEFAULT_CONFIG, debugLog } from "../config/constants.ts";
+import { DEFAULT_CONFIG, debugLog, debugAutocomplete } from "../config/constants.ts";
 import {
   processDocumentUrl,
   processDocumentFile,
@@ -107,8 +107,10 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     prompt: "Process document with Mistral OCR",
     description: "Process document with Mistral OCR",
     getArgumentCompletions: (prefix: string) => {
-      // No completions for query
-      return [];
+      debugAutocomplete(`OCR command getArgumentCompletions called with prefix: "${prefix}"`);
+      const result = [];
+      debugAutocomplete(`OCR command getArgumentCompletions returning:`, result);
+      return result;
     },
     handler: (input, ctx) => handleOcrCommand(input, ctx, pi),
   });
@@ -118,8 +120,10 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     prompt: "Clear OCR cache",
     description: "Clear OCR cache",
     getArgumentCompletions: (prefix: string) => {
-      // No completions for query
-      return [];
+      debugAutocomplete(`OCR cache-clear command getArgumentCompletions called with prefix: "${prefix}"`);
+      const result = [];
+      debugAutocomplete(`OCR cache-clear command getArgumentCompletions returning:`, result);
+      return result;
     },
     handler: handleCacheClear,
   });
@@ -129,8 +133,10 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     prompt: "Show OCR cache stats",
     description: "Show OCR cache stats",
     getArgumentCompletions: (prefix: string) => {
-      // No completions for query
-      return [];
+      debugAutocomplete(`OCR cache-stats command getArgumentCompletions called with prefix: "${prefix}"`);
+      const result = [];
+      debugAutocomplete(`OCR cache-stats command getArgumentCompletions returning:`, result);
+      return result;
     },
     handler: handleCacheStats,
   });
@@ -140,8 +146,10 @@ export function registerOcrCommands(pi: ExtensionAPI): void {
     prompt: "Show supported document types",
     description: "Show supported document types",
     getArgumentCompletions: (prefix: string) => {
-      // No completions for query
-      return [];
+      debugAutocomplete(`OCR types command getArgumentCompletions called with prefix: "${prefix}"`);
+      const result = [];
+      debugAutocomplete(`OCR types command getArgumentCompletions returning:`, result);
+      return result;
     },
     handler: handleTypes,
   });

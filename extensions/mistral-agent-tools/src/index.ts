@@ -11,7 +11,7 @@ import {
 import { isConfigured, getApiKey } from "./modules/index.ts";
 import { clearAgentCache, clearWebsearchAgentCache, cleanupTempImages, continueWebsearchConversation, extractWebsearchResults } from "./modules/index.ts";
 import { formatWebsearchResult } from "./modules/websearch-display.ts";
-import { DEFAULT_CONFIG, debugLog } from "./config/index.ts";
+import { DEFAULT_CONFIG, debugLog, debugAutocomplete } from "./config/index.ts";
 
 // ============================================================================
 // Mistral Agent Tools Extension
@@ -132,35 +132,48 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
   // ========================================================================
 
   // Register the OCR tool
+  debugAutocomplete("Registering OCR tool...");
   registerOcrTool(pi);
+  debugAutocomplete("OCR tool registered successfully");
 
   // Register the image generation tool
+  debugAutocomplete("Registering image generation tool...");
   registerImageGenerationTool(pi);
+  debugAutocomplete("Image generation tool registered successfully");
 
   // Register the websearch tool
+  debugAutocomplete("Registering websearch tool...");
   registerWebsearchTool(pi);
+  debugAutocomplete("Websearch tool registered successfully");
 
   // ========================================================================
   // Register Commands
   // ========================================================================
 
   // Setup commands
+  debugAutocomplete("Registering setup commands...");
   registerSetupCommands(pi);
 
   // Status commands
+  debugAutocomplete("Registering status commands...");
   registerStatusCommands(pi);
 
   // Generate commands
+  debugAutocomplete("Registering generate commands...");
   registerGenerateCommands(pi);
 
   // Image explorer command
+  debugAutocomplete("Registering explore-images command...");
   registerExploreImagesCommand(pi);
 
   // Websearch commands
+  debugAutocomplete("Registering websearch commands...");
   registerWebsearchCommands(pi);
 
   // OCR commands
+  debugAutocomplete("Registering OCR commands...");
   registerOcrCommands(pi);
+  debugAutocomplete("All commands registered successfully");
 
   // ========================================================================
   // Tool Events

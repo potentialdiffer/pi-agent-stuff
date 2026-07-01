@@ -108,6 +108,16 @@ export function debugVerbose(...args: any[]): void {
   }
 }
 
+/**
+ * Autocomplete-specific debug logger - always logs when AUTOCOMPLETE_DEBUG is enabled
+ * Usage: debugAutocomplete("message") or debugAutocomplete("label:", data)
+ */
+export function debugAutocomplete(...args: any[]): void {
+  if (DEFAULT_CONFIG.DEBUG_MODE || process.env.MISTRAL_AUTOCOMPLETE_DEBUG === "true") {
+    console.log("[AUTOCOMPLETE DEBUG]", ...args);
+  }
+}
+
 // ============================================================================
 // Validation
 // ============================================================================

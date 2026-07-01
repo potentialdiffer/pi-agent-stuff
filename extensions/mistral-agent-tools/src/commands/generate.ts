@@ -1,6 +1,6 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { isConfigured, getApiKey } from "../modules/auth.ts";
-import { DEFAULT_CONFIG } from "../config/constants.ts";
+import { DEFAULT_CONFIG, debugAutocomplete } from "../config/constants.ts";
 
 // ============================================================================
 // Generate Command
@@ -15,8 +15,10 @@ export function createGenerateCommand(pi: ExtensionAPI) {
     description: "Generate an image using Mistral (usage: /mistral-image <prompt>)",
     prompt: "Generate Image",
     getArgumentCompletions: (prefix: string) => {
-      // Could provide prompt suggestions in the future
-      return [];
+      debugAutocomplete(`Generate command getArgumentCompletions called with prefix: "${prefix}"`);
+      const result = [];
+      debugAutocomplete(`Generate command getArgumentCompletions returning:`, result);
+      return result;
     },
     handler: async (args: string | undefined, ctx: ExtensionCommandContext) => {
       if (!args?.trim()) {

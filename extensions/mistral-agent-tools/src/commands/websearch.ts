@@ -5,7 +5,7 @@
 
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import { isConfigured, getApiKey } from "../modules/auth.ts";
-import { DEFAULT_CONFIG, debugLog } from "../config/constants.ts";
+import { DEFAULT_CONFIG, debugLog, debugAutocomplete } from "../config/constants.ts";
 import {
   startWebsearchConversation,
   continueWebsearchConversation,
@@ -33,8 +33,10 @@ export function createWebsearchCommand(pi: ExtensionAPI) {
     description: "Search the web using Mistral (usage: /mistral-websearch <query>)",
     prompt: "Websearch",
     getArgumentCompletions: (prefix: string) => {
-      // No completions for query
-      return [];
+      debugAutocomplete(`Websearch command getArgumentCompletions called with prefix: "${prefix}"`);
+      const result = [];
+      debugAutocomplete(`Websearch command getArgumentCompletions returning:`, result);
+      return result;
     },
     handler: async (args: string | undefined, ctx: ExtensionCommandContext) => {
       if (!args?.trim()) {
@@ -153,13 +155,17 @@ export function createWebsearchContinueCommand(pi: ExtensionAPI) {
     description: "Continue a websearch conversation (usage: /mistral-websearch-continue <conversation_id> <query>)",
     prompt: "Continue Websearch",
     getArgumentCompletions: (prefix: string) => {
+      debugAutocomplete(`Websearch-continue command getArgumentCompletions called with prefix: "${prefix}"`);
       const conversations = listWebsearchConversations();
-      return conversations
-        .filter(c => typeof c.conversationId === 'string' && typeof c.initialQuery === 'string')
-        .map(c => ({
-          value: c.conversationId,
-          label: `${c.conversationId.substring(0, 20)}... - "${c.initialQuery.substring(0, 30)}${c.initialQuery.length > 30 ? "..." : ""}"`
-        }));
+      debugAutocomplete(`Websearch-continue: found ${conversations.length} conversations in cache`);
+      const filtered = conversations.filter(c => typeof c.conversationId === 'string' && typeof c.initialQuery === 'string');
+      debugAutocomplete(`Websearch-continue: filtered to ${filtered.length} valid conversations`);
+      const result = filtered.map(c => ({
+        value: c.conversationId,
+        label: `${c.conversationId.substring(0, 20)}... - "${c.initialQuery.substring(0, 30)}${c.initialQuery.length > 30 ? "..." : ""}"`
+      }));
+      debugAutocomplete(`Websearch-continue command getArgumentCompletions returning ${result.length} items:`, result);
+      return result;
     },
     handler: async (args: string | undefined, ctx: ExtensionCommandContext) => {
       if (!args?.trim()) {
@@ -341,13 +347,17 @@ export function createWebsearchClearCommand(pi: ExtensionAPI) {
     description: "Clear a websearch conversation (usage: /mistral-websearch-clear <conversation_id>)",
     prompt: "Clear Websearch Conversation",
     getArgumentCompletions: (prefix: string) => {
+      debugAutocomplete(`Websearch-clear command getArgumentCompletions called with prefix: "${prefix}"`);
       const conversations = listWebsearchConversations();
-      return conversations
-        .filter(c => typeof c.conversationId === 'string' && typeof c.initialQuery === 'string')
-        .map(c => ({
-          value: c.conversationId,
-          label: `${c.conversationId.substring(0, 20)}... - "${c.initialQuery.substring(0, 30)}${c.initialQuery.length > 30 ? "..." : ""}"`
-        }));
+      debugAutocomplete(`Websearch-clear: found ${conversations.length} conversations in cache`);
+      const filtered = conversations.filter(c => typeof c.conversationId === 'string' && typeof c.initialQuery === 'string');
+      debugAutocomplete(`Websearch-clear: filtered to ${filtered.length} valid conversations`);
+      const result = filtered.map(c => ({
+        value: c.conversationId,
+        label: `${c.conversationId.substring(0, 20)}... - "${c.initialQuery.substring(0, 30)}${c.initialQuery.length > 30 ? "..." : ""}"`
+      }));
+      debugAutocomplete(`Websearch-clear command getArgumentCompletions returning ${result.length} items:`, result);
+      return result;
     },
     handler: async (args: string | undefined, ctx: ExtensionCommandContext) => {
       if (!args?.trim()) {

@@ -5,7 +5,7 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 import { getApiKey } from "../modules/auth.ts";
-import { DEFAULT_CONFIG, debugLog } from "../config/constants.ts";
+import { DEFAULT_CONFIG, debugLog, debugAutocomplete } from "../config/constants.ts";
 import { processDocument } from "../modules/ocr-manager.ts";
 
 function parseDocumentInput(document) {
@@ -59,6 +59,15 @@ export function createOcrTool(pi: ExtensionAPI) {
 }
 
 export function registerOcrTool(pi: ExtensionAPI): void {
+  debugAutocomplete("Creating OCR tool...");
   const tool = createOcrTool(pi);
+  debugAutocomplete("OCR tool created:", {
+    name: tool.name,
+    label: tool.label,
+    description: tool.description,
+    parameters: tool.parameters,
+  });
+  debugAutocomplete("Registering OCR tool with pi.registerTool...");
   pi.registerTool(tool);
+  debugAutocomplete("OCR tool registered");
 }

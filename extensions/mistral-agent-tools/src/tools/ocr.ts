@@ -20,30 +20,17 @@ export function createOcrTool(pi: ExtensionAPI) {
   return {
     name: "ocr",
     label: "OCR",
-    description: "Extract text from PDFs and images using Mistral OCR",
-    promptSnippet: "Extract text from documents and images using OCR",
+    description: "Extract text from documents using Mistral OCR",
+    promptSnippet: "Extract text from documents using OCR",
     promptGuidelines: [
-      "Use ocr when user provides a document (PDF, image) and asks for text extraction.",
-      "Specify the document as URL, file path, or base64-encoded string.",
-      "Prefix base64 strings with 'base64:'.",
+      "Use ocr when user provides a document and asks for text extraction.",
     ],
     parameters: Type.Object({
-      document: Type.String({
-        description: "Document: URL, file path, or base64 string (prefix with 'base64:')",
-        minLength: 1,
-        maxLength: 10000,
-      }),
-      model: Type.Optional(
-        Type.String({
-          description: "Mistral model to use for OCR",
-          default: "mistral-ocr-latest",
-        })
-      ),
+      document: Type.String({ description: "Document to process with OCR" }),
     }),
 
     async execute(toolCallId: string, params: any, signal: AbortSignal | undefined, onUpdate: any, ctx: any) {
       try {
-        debugLog(`OCR tool called with toolCallId: ${String(toolCallId || "")}`);
         const doc = String(params?.document || "");
         if (!doc) throw new Error("Document parameter is required");
         const apiKey = getApiKey();

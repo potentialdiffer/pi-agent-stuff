@@ -26,7 +26,11 @@ export function createOcrTool(pi: ExtensionAPI) {
       "Use ocr when user provides a document and asks for text extraction.",
     ],
     parameters: Type.Object({
-      document: Type.String({ description: "Document to process with OCR" }),
+      document: Type.String({
+        description: "Document to process with OCR",
+        minLength: 1,
+        maxLength: 10000,
+      }),
     }),
 
     async execute(toolCallId: string, params: any, signal: AbortSignal | undefined, onUpdate: any, ctx: any) {

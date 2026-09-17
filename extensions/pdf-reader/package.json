@@ -6,7 +6,9 @@
   "pi": {
     "extensions": ["./index.ts"]
   },
-  "dependencies": {},
+  "dependencies": {
+    "typebox": "^1.3.33"
+  },
   "engines": {
     "node": ">=18.0.0"
   }

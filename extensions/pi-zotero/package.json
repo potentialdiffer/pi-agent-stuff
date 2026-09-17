@@ -5,5 +5,8 @@
   "main": "index.ts",
   "pi": {
     "extensions": ["./index.ts"]
+  },
+  "dependencies": {
+    "typebox": "^1.3.33"
   }
 }

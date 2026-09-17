@@ -204,37 +204,39 @@ export default function (pi: ExtensionAPI) {
       return false; // Block in non-interactive mode
     }
 
-    const choices = [
-      { label: "Allow once", value: "once" },
-      { label: "Always allow", value: "always" },
-      { label: "Deny once", value: "deny" },
-      { label: "Always deny", value: "always-deny" },
+    // ctx.ui.select takes an array of option STRINGS (not {label,value} objects).
+    // It returns the selected string, or undefined if cancelled.
+    const options = [
+      "Allow once",
+      "Always allow",
+      "Deny once",
+      "Always deny",
     ];
 
-    const choice = await ctx.ui.select(message, choices);
-    
+    const choice = await ctx.ui.select(message, options);
+
     if (!choice) {
       return false; // Cancelled
     }
 
-    switch (choice.value) {
-      case "deny":
-      case "always-deny":
-        if (choice.value === "always-deny") {
-          cachedDecisions.push({
-            pattern: item,
-            allowed: false,
-            timestamp: Date.now(),
-            type,
-          });
-          saveDecisions(cachedDecisions, ctx);
-        }
+    switch (choice) {
+      case "Deny once":
         return false;
 
-      case "once":
+      case "Always deny":
+        cachedDecisions.push({
+          pattern: item,
+          allowed: false,
+          timestamp: Date.now(),
+          type,
+        });
+        saveDecisions(cachedDecisions, ctx);
+        return false;
+
+      case "Allow once":
         return true;
 
-      case "always":
+      case "Always allow":
         cachedDecisions.push({
           pattern: item,
           allowed: true,

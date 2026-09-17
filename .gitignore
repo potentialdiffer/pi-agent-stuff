@@ -27,3 +27,10 @@ logs/
 # Extension specific
 .pi-images/
 client-ts/
+
+# Local config (use config.example.json as template)
+**/config.json
+!**/config.example.json
+
+# Lockfiles (single-ext deps managed via postinstall)
+**/package-lock.json

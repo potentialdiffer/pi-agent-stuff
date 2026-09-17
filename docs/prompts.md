@@ -27,21 +27,49 @@ Request a thorough, pedantic review of your code.
 Use the review prompt to analyze this code for issues.
 ```
 
+### test-python.md
+**Location:** `prompts/test-python.md`
+
+Generate comprehensive pytest tests for Python code with full coverage.
+
+**Use Case:**
+Generate a separate `test_<module>.py` file with descriptive test classes and methods following the AAA pattern (Arrange, Act, Assert).
+
+**What It Covers:**
+1. **Happy path**: Normal, expected inputs
+2. **Edge cases**: Empty, None, min/max, boundary conditions
+3. **Error cases**: Invalid types, constraint violations, missing required args
+4. **Property tests**: hypothesis-based where applicable
+
+**Style:**
+- One assertion per test when possible
+- Independent tests (no shared mutable state)
+- Fixtures for common test data
+- Parameterized tests for similar cases
+- Docstrings for test classes
+
+**Arguments:**
+`[function_name]` — optional, name of the function to generate tests for
+
+**Example Invocation:**
+```
+/test-python calculate_total
+```
+
 ---
 
 ## Creating Custom Prompts
 
-Prompts in this monorepo follow a simple YAML frontmatter format:
+Prompts in this monorepo follow the pi prompt-template spec. Frontmatter supports only `description` and an optional `argument-hint`; the prompt body is the Markdown content of the file (not a `content:` field). The filename becomes the command name (`review.md` → `/review`).
 
 ```markdown
 ---
-name: "prompt-name"
-description: "Brief description of what this prompt does"
-content: |
-  The actual prompt text goes here.
-  It can span multiple lines.
-  Use | for literal multi-line content.
+description: Brief description of what this prompt does
+argument-hint: "<required-arg> [optional-arg]"
 ---
+The actual prompt text goes here.
+It can span multiple lines.
+Use $1, $2 for positional args and $@ for all args.
 ```
 
 **Best Practices:**

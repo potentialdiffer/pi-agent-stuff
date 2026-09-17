@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -7,7 +7,27 @@ import { dirname, join } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..');
 const externalExtPath = join(repoRoot, 'external-extensions.json');
+const shippedSettingsPath = join(repoRoot, 'settings.pi-agent-stuff.json');
 const settingsPath = join(homedir(), '.pi', 'agent', 'settings.json');
+
+// Deep-merge shipped settings into target. Nested objects merge recursively;
+// shipped values win for defined keys, target keeps keys shipped file omits.
+function deepMerge(target, shipped) {
+  const out = { ...target };
+  for (const key of Object.keys(shipped)) {
+    const sv = shipped[key];
+    const tv = out[key];
+    if (
+      sv && typeof sv === 'object' && !Array.isArray(sv) &&
+      tv && typeof tv === 'object' && !Array.isArray(tv)
+    ) {
+      out[key] = deepMerge(tv, sv);
+    } else {
+      out[key] = sv;
+    }
+  }
+  return out;
+}
 
 // Read own package.json to identify this repo
 const pkg = JSON.parse(readFileSync(join(repoRoot, 'package.json'), 'utf8'));
@@ -65,3 +85,19 @@ if (toRemove.length > 0) {
 }
 
 console.log('\n✅ External extensions synchronized.');
+
+// Merge shipped settings into global pi settings
+try {
+  const shippedSettings = JSON.parse(readFileSync(shippedSettingsPath, 'utf8'));
+  let currentSettings = {};
+  try {
+    currentSettings = JSON.parse(readFileSync(settingsPath, 'utf8'));
+  } catch (e) {
+    // Settings file doesn't exist yet
+  }
+  const merged = deepMerge(currentSettings, shippedSettings);
+  writeFileSync(settingsPath, JSON.stringify(merged, null, 2) + '\n', 'utf8');
+  console.log('\n⚙️  Settings merged into ~/.pi/agent/settings.json');
+} catch (e) {
+  console.log('\n⚠️  Could not merge settings:', e.message);
+}

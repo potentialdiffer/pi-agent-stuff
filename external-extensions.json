@@ -1,4 +1,7 @@
 [
+  "npm:pi-web-access",
+  "npm:pi-subagents",
+  "npm:@advaitpaliwal/feynman",
   "npm:pi-caveman",
   "npm:pi-observational-memory",
   "npm:@juicesharp/rpiv-ask-user-question",

@@ -1,0 +1,9 @@
+{
+  "observational-memory": {
+    "model": {
+      "provider": "mistral",
+      "id": "mistral-medium-latest",
+      "thinking": "off"
+    }
+  }
+}

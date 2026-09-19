@@ -20,7 +20,7 @@ Always follow this sequence:
 
 ## Repository Structure
 
-- **extensions/**: Custom Pi extensions (pdf-reader, pi-status, security-gate, pi-zotero, pi-rtk-optimizer, mistral-agent-tools)
+- **extensions/**: Custom Pi extensions (pdf-reader, pi-status, security-gate, pi-zotero, pi-rtk-optimizer, mistral-agent-tools, pi-vision)
 - **skills/**: SKILL files for specialized tasks (git-info, literature-review, data-analysis, latex-assistant, python-code, review)
 - **prompts/**: Prompt templates (review.md)
 - **docs/**: Documentation for extensions, skills, and prompts

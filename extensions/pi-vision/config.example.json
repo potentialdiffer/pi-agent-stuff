@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "model": "pixtral-12b-latest",
+  "baseUrl": "https://api.mistral.ai",
+  "maxTokens": 2048,
+  "timeoutMs": 120000,
+  "maxImageBytes": 10485760,
+  "cacheTtlHours": 24,
+  "cacheMaxEntries": 100,
+  "describePrompt": "You are a vision bridge for a coding agent that cannot see images. Describe this image precisely and completely so the agent can work with it. Include: (1) overall type (screenshot, photo, diagram, chart, plot, error message, UI, document scan), (2) ALL visible text verbatim, (3) layout and structure; colors only when relevant, (4) for code or terminal screenshots, transcribe exactly, (5) for charts/plots, describe axes, data trends, and key values. Be factual and terse. Do not speculate beyond what is visible."
+}

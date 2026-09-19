@@ -1,0 +1,22 @@
+{
+  "name": "pi-vision",
+  "version": "0.1.0",
+  "description": "Pi extension: image vision bridge via Mistral Pixtral for models without image input support",
+  "type": "module",
+  "pi": {
+    "extensions": ["./src/index.ts"]
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "pi",
+    "extension",
+    "vision",
+    "pixtral",
+    "mistral",
+    "image",
+    "multimodal"
+  ],
+  "license": "MIT"
+}

@@ -1,10 +1,10 @@
 # pi-vision
 
-Image vision bridge for the pi coding agent. Describes images via **Mistral Pixtral** when the active model cannot process images itself.
+Image vision bridge for the pi coding agent. Describes images via **Mistral's vision models** (default: Ministral 3 14B, official successor of Pixtral 12B) when the active model cannot process images itself.
 
 ## Why
 
-pi drops image content for models registered with `input: ["text"]` only — the model just sees `(image omitted: model does not support images)`. This extension fills that gap: before every LLM call, image blocks are swapped (in the request copy only) with a Pixtral-generated text description.
+pi drops image content for models registered with `input: ["text"]` only — the model just sees `(image omitted: model does not support images)`. This extension fills that gap: before every LLM call, image blocks are swapped (in the request copy only) with a vision-model-generated text description.
 
 ## How it works
 
@@ -16,7 +16,7 @@ pi `context` event (before each LLM call)
         │
         ├─ active model supports images? ──► pass through, zero overhead
         ├─ no Mistral API key? ──► pass through (provider placeholder remains)
-        └─ else: describe each image block via Pixtral, replace with text
+        └─ else: describe each image block via the configured vision model, replace with text
                 │
                 ▼
         cache (sha256 image hash, TTL 24h) → repeat calls are free
@@ -25,7 +25,7 @@ pi `context` event (before each LLM call)
 Key properties:
 
 - **Session history stays intact.** The `context` event receives a deep copy; original session entries still contain the images. TUI keeps rendering them, and switching to a vision model (`/model`) restores native image input with no bridge interference.
-- **Cached.** One Pixtral call per image; subsequent turns and even sessions (same process) reuse the description.
+- **Cached.** One vision-model call per image; subsequent turns and even sessions (same process) reuse the description.
 - **Retries.** 429/5xx retried with backoff; failures are retried on the next LLM call (errors are not cached).
 
 ## Features
@@ -37,6 +37,18 @@ Key properties:
 | `/vision` | Status (bridge, key, model, cache) |
 | `/vision-test <path> [question]` | Manual end-to-end test |
 | `/vision-cache-clear` | Drop cached descriptions |
+
+## Vision model choice
+
+| Model | API ID | Price (in/out per M) | Notes |
+|---|---|---|---|
+| **Ministral 3 14B** (default) | `ministral-14b-latest` | $0.20 / $0.20 | Official Pixtral 12B replacement (Pixtral deprecated 12/2025). Edge-class, fast, 256K ctx. Best bridge default: dense captioning/transcription is not a reasoning task. |
+| Mistral Small 4 | `mistral-small-latest` | ~$0.15 in | Unified Magistral + Pixtral + Devstral; `reasoning_effort` |
+| Mistral Medium 3.5 | `mistral-medium-3-5` | $1.50 / $7.50 | Frontier multimodal. Overkill for automatic bridging (cost + latency), but a good choice for deep, question-driven `describe_image` analysis |
+| ~~Pixtral 12B~~ | `pixtral-12b-2409` | $0.15 / $0.15 | **Deprecated 12/2025** — still served, but migrate |
+| ~~Magistral~~ | — | — | Text-only reasoning model: **cannot accept images**. Never valid here |
+
+Switch via `PI_VISION_MODEL` or the config file.
 
 ## Setup
 
@@ -60,7 +72,7 @@ pi -e extensions/pi-vision/src/index.ts
 ```json
 {
   "enabled": true,
-  "model": "pixtral-12b-latest",
+  "model": "ministral-14b-latest",
   "maxTokens": 2048,
   "timeoutMs": 120000,
   "maxImageBytes": 10485760,
@@ -71,8 +83,6 @@ pi -e extensions/pi-vision/src/index.ts
 ```
 
 Environment overrides: `PI_VISION_MODEL`, `PI_VISION_BASE_URL` (or `MISTRAL_BASE_URL`), `PI_VISION_MAX_TOKENS`, `PI_VISION_TIMEOUT_MS`, `PI_VISION_ENABLED=0`.
-
-Model options: `pixtral-12b-latest` (default, cheap), `pixtral-large-latest` (higher quality), or any Mistral multimodal chat model.
 
 ## Notes
 

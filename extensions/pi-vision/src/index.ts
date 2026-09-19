@@ -1,6 +1,6 @@
 // ============================================================================
 // pi-vision
-// Image vision bridge for pi: describes images via Mistral Pixtral when the
+// Image vision bridge for pi: describes images via a Mistral vision model when the
 // active model has no image input support.
 //
 // How it works:
@@ -8,11 +8,11 @@
 //   layer, leaving only "(image omitted: model does not support images)".
 // - This extension hooks the `context` event (fires before every LLM call)
 //   and, when ctx.model lacks "image" input, replaces every image content
-//   block in the (deep-copied) messages with a Pixtral text description.
+//   block in the (deep-copied) messages with a vision-model text description.
 // - Session entries are NOT modified: the TUI keeps showing images, and
 //   switching to a vision model later restores native image input.
-// - Descriptions are cached per image hash, so Pixtral is called once per
-//   image (per question), not once per turn.
+// - Descriptions are cached per image hash, so the vision model is called once
+//   per image (per question), not once per turn.
 //
 // Tool: describe_image(path, question?) — explicit, question-driven analysis.
 // Commands: /vision (status), /vision-test <path> [question]
@@ -96,7 +96,7 @@ export default function piVisionExtension(pi: ExtensionAPI) {
     name: "describe_image",
     label: "Describe image",
     description:
-      "Analyze an image file with a vision model (Mistral Pixtral). " +
+      "Analyze an image file with a Mistral vision model (default: Ministral 3 14B). " +
       "Use when the current model cannot see images (attached images or `read` on image files " +
       "are dropped for text-only models), or when you need a focused answer to a specific " +
       "question about an image (screenshot, plot, diagram, photo). Returns text.",
@@ -135,7 +135,7 @@ export default function piVisionExtension(pi: ExtensionAPI) {
       }
       try {
         onUpdate?.({
-          content: [{ type: "text", text: `Analyzing ${path.basename(p)} with Pixtral...` }],
+          content: [{ type: "text", text: `Analyzing ${path.basename(p)} with ${getConfig().model}...` }],
         });
         const description = await describeImage(buffer.toString("base64"), mimeType, {
           question: params?.question ? String(params.question) : undefined,
@@ -160,7 +160,7 @@ export default function piVisionExtension(pi: ExtensionAPI) {
   // ========================================================================
 
   pi.registerCommand("vision", {
-    description: "pi-vision status (Pixtral vision bridge)",
+    description: "pi-vision status (Mistral vision bridge)",
     handler: async (_args, ctx) => {
       const cfg = getConfig();
       const configured = isConfigured();
@@ -199,7 +199,7 @@ export default function piVisionExtension(pi: ExtensionAPI) {
         const description = await describeImage(buffer.toString("base64"), sniffMimeType(p, buffer), {
           question,
         });
-        ctx.ui.notify(`Pixtral says:\n\n${description}`, "info");
+        ctx.ui.notify(`${getConfig().model} says:\n\n${description}`, "info");
       } catch (error) {
         ctx.ui.notify(`pi-vision test failed: ${String(error)}`, "error");
       }

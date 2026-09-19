@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "model": "pixtral-12b-latest",
+  "model": "ministral-14b-latest",
   "baseUrl": "https://api.mistral.ai",
   "maxTokens": 2048,
   "timeoutMs": 120000,

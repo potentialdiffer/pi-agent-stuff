@@ -10,7 +10,12 @@ import * as os from "node:os";
 export interface VisionConfig {
   /** Master switch for the automatic context bridge (tool stays available) */
   enabled: boolean;
-  /** Pixtral (or other Mistral vision) model used for descriptions */
+  /**
+   * Vision model used for descriptions. Default: Ministral 3 14B — Mistral's
+   * official replacement for the deprecated Pixtral 12B (12/2025).
+   * Alternatives: mistral-small-latest (Small 4, unified), mistral-medium-3-5
+   * (frontier, ~37x output cost — for deep question-driven analysis)
+   */
   model: string;
   /** Mistral API base URL */
   baseUrl: string;
@@ -30,7 +35,7 @@ export interface VisionConfig {
 
 export const DEFAULT_CONFIG: VisionConfig = {
   enabled: true,
-  model: "pixtral-12b-latest",
+  model: "ministral-14b-latest",
   baseUrl: "https://api.mistral.ai",
   maxTokens: 2048,
   timeoutMs: 120_000,

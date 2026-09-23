@@ -1,8 +1,10 @@
 {
+  "defaultProvider": "mistral",
+  "defaultModel": "zai-glm-5-3",
   "observational-memory": {
     "model": {
       "provider": "mistral",
-      "id": "mistral-medium-latest",
+      "id": "zai-glm-5-3",
       "thinking": "off"
     }
   }

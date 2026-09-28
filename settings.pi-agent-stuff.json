@@ -5,7 +5,7 @@
     "model": {
       "provider": "mistral",
       "id": "zai-glm-5-3",
-      "thinking": "off"
+      "thinking": "medium"
     }
   }
 }

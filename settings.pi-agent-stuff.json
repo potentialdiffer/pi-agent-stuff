@@ -1,6 +1,10 @@
 {
   "defaultProvider": "mistral",
   "defaultModel": "zai-glm-5-3",
+  "defaultThinkingLevel": "high",
+  "modelThinkingLevels": {
+    "mistral/zai-glm-5-3": "high"
+  },
   "observational-memory": {
     "model": {
       "provider": "mistral",

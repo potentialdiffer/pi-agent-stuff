@@ -18,6 +18,18 @@ Always follow this sequence:
 4. **Update extensions** with Pi: `pi update --extensions` -> done by user
 5. **Test/use** the updated configuration -> done by user
 
+## Review Policy
+
+Before declaring any task done with changed source files in this repo:
+
+1. Run deterministic checks first (tests, typecheck, lint). LLM review only after green.
+2. One fresh-context `opus-reviewer` pass on the diff. Second pass only on a structured P0/P1 finding. Max 3 rounds; stop when clean.
+3. Diff touches auth, payments, data migration, public API, or CI/pipeline config: ensemble — `opus-reviewer` AND `gpt-sol-reviewer`, fix the intersection of findings before finishing.
+4. Done means checks green and no P0/P1 findings — never "reviewers agree".
+5. `astra-oracle` only on explicit operator request or after Opus/Sol provably failed.
+
+Apply this policy to any other project with `node scripts/install-review-policy.js <project-path>` (add `--watchdog` to also enable the GPT-6.1-Sol change watchdog in that project's `.pi/settings.json`). Template: `templates/review-policy.md`.
+
 ## Repository Structure
 
 - **extensions/**: Custom Pi extensions (pdf-reader, pi-status, security-gate, pi-zotero, pi-rtk-optimizer, mistral-agent-tools, pi-vision)

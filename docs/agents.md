@@ -95,6 +95,21 @@ taste/risk/intent; GPT Sol: deep technical tradeoffs; GLM: cost/practicality).
 `council-*` profiles must live in user or project agent dirs, not in this
 package; copy a profile template into `.pi/agents/` per project.
 
+## Review policy propagation
+
+`AGENTS.md` in this repo carries the review policy for work on the repo
+itself. To apply the same evidence-based completion policy to any other
+project:
+
+```bash
+node scripts/install-review-policy.js /path/to/project [--watchdog]
+```
+
+Idempotent (marker-tagged block), merges the GPT-6.1-Sol watchdog into that
+project's `.pi/settings.json` when `--watchdog` is passed. For an all-projects
+setup, copy the block from `templates/review-policy.md` into
+`~/.pi/agent/AGENTS.md` (operator-applied, per the repo critical rule).
+
 ## Model changes
 
 To point these agents at a different model later, edit the `model:` frontmatter

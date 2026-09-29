@@ -32,5 +32,7 @@ client-ts/
 **/config.json
 !**/config.example.json
 
-# Lockfiles (single-ext deps managed via postinstall)
+# Lockfiles — extension-level locks ignored; the root package-lock.json is tracked.
+# Extension runtime deps are declared in the ROOT package.json dependencies
+# (authoritative; sub-manifest dependencies are documentation only — pi never installs them).
 **/package-lock.json

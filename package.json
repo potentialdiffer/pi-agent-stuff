@@ -19,7 +19,10 @@
   "pi": {
     "extensions": ["./extensions"],
     "skills": ["./skills"],
-    "prompts": ["./prompts"]
+    "prompts": ["./prompts"],
+    "subagents": {
+      "agents": ["./agents"]
+    }
   },
   "scripts": {
     "postinstall": "node scripts/postinstall.js"

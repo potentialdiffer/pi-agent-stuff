@@ -58,6 +58,14 @@ Add to your Pi config to load extensions, skills, and prompts.
 pi install pi:git@github.com:potentialdiffer/pi-agent-stuff.git
 ```
 
+The postinstall script self-skips during pi-managed installs, so after `pi install`
+or `pi update --extensions` run it manually to sync external extensions and
+shipped settings:
+
+```bash
+node scripts/postinstall.js
+```
+
 ## Configuration
 
 For **pi-zotero**, create a `config.json` in the extension directory with your Zotero API credentials:

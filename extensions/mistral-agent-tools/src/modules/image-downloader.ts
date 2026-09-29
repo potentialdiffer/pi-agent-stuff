@@ -34,7 +34,20 @@ export async function downloadImage(
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const fileResponse = await client.files.download({ fileId, signal });
+      // The request type only accepts fileId; abort signal and timeout go in
+      // the second RequestOptions argument. A passed signal disables the SDK's
+      // own timeoutMs handling (sdks.js: if (!fetchOptions?.signal && conf.timeoutMs)),
+      // so combine the caller's signal with AbortSignal.timeout to keep the
+      // download bounded either way.
+      const fileResponse = await client.files.download(
+        { fileId },
+        {
+          signal: signal
+            ? AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)])
+            : undefined,
+          timeoutMs,
+        }
+      );
       const imageData = await extractImageData(fileResponse);
 
       // Validate image data
@@ -54,6 +67,11 @@ export async function downloadImage(
       };
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
+
+      // A caller-aborted download must not be retried with backoff.
+      if (signal?.aborted) {
+        throw lastError;
+      }
 
       // Don't retry on certain errors
       if (isNonRetryableError(lastError)) {
@@ -86,6 +104,10 @@ export async function downloadImages(
   const results: GeneratedImage[] = [];
   
   for (const fileId of fileIds) {
+    // Stop processing remaining files once the caller has aborted.
+    if (options.signal?.aborted) {
+      break;
+    }
     try {
       const image = await downloadImage(client, fileId, options);
       results.push(image);

@@ -1,7 +1,7 @@
 import { Mistral } from "@mistralai/mistralai";
 import { AgentCacheEntry, ImageGenerationError } from "../config/types.ts";
 import { DEFAULT_CONFIG } from "../config/constants.ts";
-import { createMistralClient, getApiKey } from "./auth.ts";
+import { createMistralClient, getApiKey, getBaseUrl } from "./auth.ts";
 
 // ============================================================================
 // Agent Manager Module
@@ -88,7 +88,7 @@ async function createImageGenerationAgent(
     if (!resolvedApiKey) {
       throw new Error("API key is required");
     }
-    const baseUrl = "https://api.mistral.ai";
+    const baseUrl = getBaseUrl() ?? DEFAULT_CONFIG.BASE_URL;
     const requestBody = {
       model: model,
       name: "Image Generation Agent",
@@ -153,7 +153,7 @@ export async function getAgentById(
     }
     if (!resolvedApiKey) return null;
     const client = createMistralClient(resolvedApiKey);
-    const baseUrl = "https://api.mistral.ai";
+    const baseUrl = getBaseUrl() ?? DEFAULT_CONFIG.BASE_URL;
     const response = await fetch(`${baseUrl}/v1/agents/${agentId}`, {
       method: "GET",
       headers: {
@@ -184,7 +184,7 @@ export async function deleteAgent(agentId: string, apiKey?: string): Promise<boo
     }
     if (!resolvedApiKey) return false;
     const client = createMistralClient(resolvedApiKey);
-    const baseUrl = "https://api.mistral.ai";
+    const baseUrl = getBaseUrl() ?? DEFAULT_CONFIG.BASE_URL;
     const response = await fetch(`${baseUrl}/v1/agents/${agentId}`, {
       method: "DELETE",
       headers: {
@@ -220,7 +220,7 @@ export async function listAgents(apiKey?: string): Promise<Array<{ id: string; n
     }
     if (!resolvedApiKey) return [];
     const client = createMistralClient(resolvedApiKey);
-    const baseUrl = "https://api.mistral.ai";
+    const baseUrl = getBaseUrl() ?? DEFAULT_CONFIG.BASE_URL;
     const response = await fetch(`${baseUrl}/v1/agents`, {
       method: "GET",
       headers: {

@@ -54,7 +54,7 @@ This repository is configured as a Pi package. The `package.json` defines:
 - Skills directory: `./skills`
 - Prompts directory: `./prompts`
 
-Post-install script runs `scripts/postinstall.js` for setup.
+Post-install script `scripts/postinstall.js` syncs external extensions (`external-extensions.json`) and ships settings (`settings.pi-agent-stuff.json`). It deliberately self-skips during pi-managed installs (`npm_config_omit` or a checkout under `~/.pi/agent/git/`) to avoid racing pi's own settings writes. After `pi install` / `pi update --extensions`, run `node scripts/postinstall.js` manually to sync external extensions and settings.
 
 ## Installation
 

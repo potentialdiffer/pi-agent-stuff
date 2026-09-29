@@ -16,12 +16,14 @@ interface AuthFileData {
   mistral?: {
     apiKey?: string;
     baseUrl?: string;
+    endpoint?: string;
     type?: string;
     key?: string;
   };
   "mistral-image-api"?: {
     apiKey?: string;
     baseUrl?: string;
+    endpoint?: string;
     type?: string;
     key?: string;
   };
@@ -193,11 +195,11 @@ export async function validateApiKey(apiKey: string, baseUrl?: string): Promise<
   try {
     const client = new Mistral({
       apiKey,
-      ...(baseUrl && { endpoint: baseUrl }),
+      ...(baseUrl && { serverURL: baseUrl }),
     });
     
     // Lightweight validation - list models
-    await client.models.list({ limit: 1 });
+    await client.models.list();
     return true;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
@@ -281,6 +283,6 @@ export function createMistralClient(apiKey?: string): Mistral {
   
   return new Mistral({
     apiKey: key,
-    ...(baseUrl && { endpoint: baseUrl }),
+    ...(baseUrl && { serverURL: baseUrl }),
   });
 }

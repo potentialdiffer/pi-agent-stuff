@@ -2,7 +2,7 @@ import { Mistral } from "@mistralai/mistralai";
 import type { ConversationResponse, MessageOutputEntry, ToolFileChunk } from "@mistralai/mistralai/models/components/index.js";
 import { ImageGenerationParams, ImageGenerationError } from "../config/types.ts";
 import { DEFAULT_CONFIG } from "../config/constants.ts";
-import { getApiKey } from "../modules/auth.ts";
+import { getApiKey, getBaseUrl } from "../modules/auth.ts";
 
 // ============================================================================
 // Conversation Manager Module
@@ -52,7 +52,7 @@ export async function startImageConversation(
     if (!resolvedApiKey) {
       throw new Error("API key is required");
     }
-    const baseUrl = "https://api.mistral.ai";
+    const baseUrl = getBaseUrl() ?? DEFAULT_CONFIG.BASE_URL;
     
     // Use raw fetch to have full control over the request body
     // Build request with agent_id (required for image generation)
@@ -229,7 +229,7 @@ export async function pollForFileIds(
       if (!resolvedApiKey) {
         throw new Error("API key is required");
       }
-      const baseUrl = "https://api.mistral.ai";
+      const baseUrl = getBaseUrl() ?? DEFAULT_CONFIG.BASE_URL;
       const response = await fetch(`${baseUrl}/v1/conversations/${conversationId}`, {
         method: "GET",
         headers: {
@@ -285,7 +285,7 @@ export async function getConversation(
   if (!resolvedApiKey) {
     throw new Error("API key is required");
   }
-  const baseUrl = "https://api.mistral.ai";
+  const baseUrl = getBaseUrl() ?? DEFAULT_CONFIG.BASE_URL;
   const response = await fetch(`${baseUrl}/v1/conversations/${conversationId}`, {
     method: "GET",
     headers: {
@@ -318,7 +318,7 @@ export async function deleteConversation(
       }
     }
     if (!resolvedApiKey) return false;
-    const baseUrl = "https://api.mistral.ai";
+    const baseUrl = getBaseUrl() ?? DEFAULT_CONFIG.BASE_URL;
     const response = await fetch(`${baseUrl}/v1/conversations/${conversationId}`, {
       method: "DELETE",
       headers: {

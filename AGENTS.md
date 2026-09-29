@@ -21,7 +21,7 @@ Always follow this sequence:
 ## Repository Structure
 
 - **extensions/**: Custom Pi extensions (pdf-reader, pi-status, security-gate, pi-zotero, pi-rtk-optimizer, mistral-agent-tools, pi-vision)
-- **agents/**: Subagent agent definitions shipped via `pi.subagents.agents` (opus-oracle, opus-reviewer on Claude Opus 5.5)
+- **agents/**: Subagent agent definitions shipped via `pi.subagents.agents` (opus-oracle, opus-reviewer on Claude Opus 5.5; gpt-sol-reviewer, astra-oracle on OpenAI)
 - **skills/**: SKILL files for specialized tasks (git-info, literature-review, data-analysis, latex-assistant, python-code, review)
 - **prompts/**: Prompt templates (review.md)
 - **docs/**: Documentation for extensions, skills, and prompts

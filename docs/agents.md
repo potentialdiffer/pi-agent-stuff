@@ -11,6 +11,21 @@ with the same name shadows them.
 |---|---|---|
 | `opus-oracle` | `anthropic/claude-opus-5-5` (thinking: high) | Read-only consultant. Second opinions, decision critique, drift detection, root-cause questions. Fresh context. |
 | `opus-reviewer` | `anthropic/claude-opus-5-5` (thinking: high) | Adversarial reviewer for diffs, plans, implementations. Read-only, evidence-first, P0/P1/P2 findings + merge verdict. Fresh context. |
+| `gpt-sol-reviewer` | `openai/gpt-6.1-sol` (thinking: high) | Adversarial reviewer from an independent model family. Ensemble counterpart to `opus-reviewer`: same rubric, same output shape, uncorrelated findings. |
+| `astra-oracle` | `openai/gpt-6-astra` (thinking: high) | Escalation-tier consultant. Hardest long-horizon problems and ambiguous deep debugging — only after cheaper models proved insufficient. |
+
+## Tier map
+
+| Tier | Model | Pi role | Cost (per 1M tok) |
+|---|---|---|---|
+| 1. Fast workhorse | GLM 5.3 (session default) | parent, `scout`, `worker` | cheap |
+| 2. Standard well-scoped | GLM 5.3 @ high / GPT-6.1-Sol @ medium | routine review, focused implementation | low |
+| 3. Deep bounded | `openai/gpt-6.1-sol:high` | hard analysis, deep oracle work | $2 / $10 |
+| 3b. Escalation only | `openai/gpt-6-astra:high` | only when Sol provably insufficient | $10 / $50 |
+| 4. Judge / intent / taste | `anthropic/claude-opus-5-5:high` | consultation, adversarial review, ambiguous scoping | top |
+
+Routing rule: tiers 1–3 when the task is well-scoped; tier 4 (Opus) when
+scoping or judging is the task itself.
 
 ## Usage
 
@@ -45,6 +60,40 @@ subagent({ agent: "opus-reviewer", task: "Review diff for P0/P1 issues.", contex
   review to a different frontier model breaks the echo chamber.
 - **Per-role pinning, not global.** Model is pinned per agent in frontmatter.
   Do not set `subagents.defaultModel` — that would pin every child to Opus.
+
+## Ensemble review recipe
+
+Writer family must never review itself. Same-family reviewers correlate;
+cross-family reviewers do not.
+
+```
+GLM worker implements
+  -> opus-reviewer        (Claude family: P0/P1/P2 + verdict)
+  -> gpt-sol-reviewer     (GPT family: same rubric, uncorrelated)
+  -> parent synthesizes:  intersection of findings = must-fix;
+                          union of P2 = optional; disagreement = adjudicate
+  -> GLM fix-worker applies accepted fixes
+repeat max 3 rounds
+```
+
+Ensemble discipline:
+- Identical rubric and output shape for both reviewers — only the model varies
+- Never two same-family models on one review (e.g. Sol + Astra together)
+- Both flag the same P0 = certain blocker, fix now
+- Disagreement = signal, not failure; parent adjudicates and looks itself
+
+## Escalation ladder
+
+GLM -> GPT Sol @ high -> (rare) Astra -> (rare) Opus oracle.
+Each rung only when the previous provably failed. `astra-oracle` expects the
+packet to say what was already tried and why it fell short.
+
+## Council of three
+
+For material decisions, one advisor per family with distinct stances (Opus:
+taste/risk/intent; GPT Sol: deep technical tradeoffs; GLM: cost/practicality).
+`council-*` profiles must live in user or project agent dirs, not in this
+package; copy a profile template into `.pi/agents/` per project.
 
 ## Model changes
 

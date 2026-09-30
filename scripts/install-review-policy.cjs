@@ -2,10 +2,11 @@
 // Append the pi-agent-stuff review policy to a project's AGENTS.md and
 // optionally enable the GPT-6.1-Sol watchdog in that project's .pi/settings.json.
 // Idempotent. Explicit invocation only — never run from postinstall.
-
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { resolve, isAbsolute } from 'node:path';
-import process from 'node:process';
+// CommonJS (.cjs) on purpose: must run with any Node.js >= 10, including old
+// distro binaries that cannot parse ESM `import` syntax in .js files (the
+// package.json declares "type": "module"). See scripts/postinstall.cjs.
+const { existsSync, mkdirSync, readFileSync, writeFileSync } = require('fs');
+const { resolve, isAbsolute } = require('path');
 
 const MARKER_START = '<!-- pi-agent-stuff:review-policy v1 -->';
 const MARKER_END = '<!-- /pi-agent-stuff:review-policy -->';
@@ -39,7 +40,7 @@ const WATCHDOG_BLOCK = {
   },
 };
 
-const usage = `Usage: node install-review-policy.js <project-path> [--watchdog]
+const usage = `Usage: node scripts/install-review-policy.cjs <project-path> [--watchdog]
 
   <project-path>   Target project directory (defaults to current directory)
   --watchdog       Also merge the GPT-6.1-Sol change watchdog into
@@ -76,7 +77,8 @@ function main() {
     process.exit(0);
   }
   const wantWatchdog = args.includes('--watchdog');
-  const targetArg = args.filter((a) => !a.startsWith('--'))[0] ?? '.';
+  const positional = args.filter((a) => !a.startsWith('--'));
+  const targetArg = positional.length > 0 ? positional[0] : '.';
   const project = isAbsolute(targetArg) ? targetArg : resolve(targetArg);
 
   if (!existsSync(project)) fail(`project path not found: ${project}`);
@@ -111,7 +113,7 @@ function main() {
     console.log(`merged: watchdog config -> ${settingsPath}`);
   }
 
-  console.log('note: named agents require the pi-agent-stuff package installed (pi install pi:git@github.com:potentialdiffer/pi-agent-stuff.git)');
+  console.log('note: named agents require the pi-agent-stuff package installed (pi install git:github.com/potentialdiffer/pi-agent-stuff)');
 }
 
 main();

@@ -102,7 +102,7 @@ itself. To apply the same evidence-based completion policy to any other
 project:
 
 ```bash
-node scripts/install-review-policy.js /path/to/project [--watchdog]
+node scripts/install-review-policy.cjs /path/to/project [--watchdog]
 ```
 
 Idempotent (marker-tagged block), merges the GPT-6.1-Sol watchdog into that

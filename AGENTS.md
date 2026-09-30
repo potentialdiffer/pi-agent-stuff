@@ -28,7 +28,7 @@ Before declaring any task done with changed source files in this repo:
 4. Done means checks green and no P0/P1 findings — never "reviewers agree".
 5. `astra-oracle` only on explicit operator request or after Opus/Sol provably failed.
 
-Apply this policy to any other project with `node scripts/install-review-policy.js <project-path>` (add `--watchdog` to also enable the GPT-6.1-Sol change watchdog in that project's `.pi/settings.json`). Template: `templates/review-policy.md`.
+Apply this policy to any other project with `node scripts/install-review-policy.cjs <project-path>` (add `--watchdog` to also enable the GPT-6.1-Sol change watchdog in that project's `.pi/settings.json`). Template: `templates/review-policy.md`.
 
 ## Repository Structure
 
@@ -54,12 +54,12 @@ This repository is configured as a Pi package. The `package.json` defines:
 - Skills directory: `./skills`
 - Prompts directory: `./prompts`
 
-Post-install script `scripts/postinstall.js` syncs external extensions (`external-extensions.json`) and ships settings (`settings.pi-agent-stuff.json`). It deliberately self-skips during pi-managed installs (`npm_config_omit` or a checkout under `~/.pi/agent/git/`) to avoid racing pi's own settings writes. After `pi install` / `pi update --extensions`, run `node scripts/postinstall.js` manually to sync external extensions and settings.
+Post-install script `scripts/postinstall.cjs` syncs external extensions (`external-extensions.json`) and ships settings (`settings.pi-agent-stuff.json`). It deliberately self-skips during pi-managed installs (`npm_config_omit` or a checkout under `~/.pi/agent/git/`) to avoid racing pi's own settings writes. After `pi install` / `pi update --extensions`, run `node scripts/postinstall.cjs` manually to sync external extensions and settings. Both scripts under `scripts/` are plain CommonJS (`.cjs`) so they run on any Node.js ≥ 10, even when the `node` on `PATH` is an old distro binary.
 
 ## Installation
 
 ```bash
-pi install pi:git@github.com:potentialdiffer/pi-agent-stuff.git
+pi install git:github.com/potentialdiffer/pi-agent-stuff
 ```
 
 ## Updates

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Potentialdiffer's pi coding agent extensions, skills, and prompts for research and engineering",
   "type": "module",
+  "engines": {
+    "node": ">=10"
+  },
   "keywords": [
     "pi-package",
     "pi-extension",
@@ -25,7 +28,7 @@
     }
   },
   "scripts": {
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.cjs"
   },
   "dependencies": {
     "@mistralai/mistralai": "^2.7.0",

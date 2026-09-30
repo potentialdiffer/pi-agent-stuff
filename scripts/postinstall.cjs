@@ -1,10 +1,16 @@
-import { readFileSync, writeFileSync } from 'node:fs';
-import { execSync } from 'node:child_process';
-import { homedir } from 'node:os';
-import { fileURLToPath } from 'node:url';
-import { dirname, join, sep } from 'node:path';
+// CommonJS (.cjs) on purpose: this script must run with any Node.js >= 10,
+// including old distro binaries (e.g. Ubuntu 20.04's node 10) that cannot
+// parse ESM `import` syntax in .js files. The package.json declares
+// "type": "module", which would make a CommonJS .js file fail on modern
+// Node instead — .cjs is CommonJS on every Node version. Plain require()
+// paths without the "node:" prefix work everywhere (the prefixed form
+// needs Node >= 12.20 / 14.13), and no optional chaining / nullish
+// coalescing is used (Node >= 14).
+const { readFileSync, writeFileSync } = require('fs');
+const { execSync } = require('child_process');
+const { homedir } = require('os');
+const { join, sep } = require('path');
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..');
 const externalExtPath = join(repoRoot, 'external-extensions.json');
 const shippedSettingsPath = join(repoRoot, 'settings.pi-agent-stuff.json');
@@ -18,7 +24,7 @@ const settingsPath = join(homedir(), '.pi', 'agent', 'settings.json');
 // `pi remove` and writing ~/.pi/agent/settings.json at that moment can race
 // with the outer pi process (which manages the same settings), and a nested
 // failure would fail `npm install`, making pi roll back the entire git
-// checkout. Run `node scripts/postinstall.js` manually to sync external
+// checkout. Run `node scripts/postinstall.cjs` manually to sync external
 // extensions and shipped settings.
 function isPiManagedCheckout() {
   const piGitRoot = join(homedir(), '.pi', 'agent', 'git');
@@ -30,7 +36,7 @@ if (process.env.npm_config_omit || isPiManagedCheckout()) {
     ? `dependency-only install detected: npm_config_omit=${process.env.npm_config_omit}`
     : 'running inside a pi-managed git checkout';
   console.log(`\n⏭️  Skipping postinstall (${reason}).`);
-  console.log('    Run `node scripts/postinstall.js` manually to sync external extensions and settings.');
+  console.log('    Run `node scripts/postinstall.cjs` manually to sync external extensions and settings.');
   process.exit(0);
 }
 
@@ -100,7 +106,7 @@ function main() {
       try {
         execSync(`pi install ${pkg}`, { stdio: 'inherit' });
       } catch (e) {
-        console.warn(`   ⚠️  Failed to install ${pkg}: ${e?.message || e} (continuing)`);
+        console.warn(`   ⚠️  Failed to install ${pkg}: ${(e && e.message) || e} (continuing)`);
       }
     }
   }
@@ -113,7 +119,7 @@ function main() {
       try {
         execSync(`pi remove ${pkg}`, { stdio: 'inherit' });
       } catch (e) {
-        console.warn(`   ⚠️  Failed to remove ${pkg}: ${e?.message || e} (continuing)`);
+        console.warn(`   ⚠️  Failed to remove ${pkg}: ${(e && e.message) || e} (continuing)`);
       }
     }
   }
@@ -142,6 +148,6 @@ function main() {
 try {
   main();
 } catch (e) {
-  console.warn(`\n⚠️  postinstall: ${e?.message || e} (non-fatal, continuing)`);
+  console.warn(`\n⚠️  postinstall: ${(e && e.message) || e} (non-fatal, continuing)`);
   process.exit(0);
 }

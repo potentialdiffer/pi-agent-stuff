@@ -43,6 +43,17 @@ Custom extensions, skills, and prompts for the [Pi Coding Agent](https://github.
   - Checks for performance, security, and readability issues
   - Pedantic review style
 
+## Requirements
+
+- **Node.js ≥ 10** on your `PATH` — required to run the post-install script
+  (`scripts/postinstall.cjs`, plain CommonJS, runs on any Node ≥ 10 including
+  old distro binaries such as Ubuntu 20.04's system `node`; Pi's bundled Node
+  under `~/.local/share/pi-node/current/bin/node` also qualifies).
+- **`pi` CLI** on your `PATH` — the post-install script calls `pi install` /
+  `pi remove` to sync external extensions.
+- Per-extension extras: `poppler-utils` for pdf-reader, a Mistral API key for
+  mistral-agent-tools.
+
 ## Installation
 
 ```bash
@@ -55,7 +66,7 @@ Add to your Pi config to load extensions, skills, and prompts.
 ### With Pi
 
 ```bash
-pi install pi:git@github.com:potentialdiffer/pi-agent-stuff.git
+pi install git:github.com/potentialdiffer/pi-agent-stuff
 ```
 
 The postinstall script self-skips during pi-managed installs, so after `pi install`
@@ -63,7 +74,7 @@ or `pi update --extensions` run it manually to sync external extensions and
 shipped settings:
 
 ```bash
-node scripts/postinstall.js
+node scripts/postinstall.cjs
 ```
 
 ## Configuration

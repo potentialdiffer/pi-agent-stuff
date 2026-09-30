@@ -11,8 +11,8 @@ project's `AGENTS.md`.
 Per project, from a checkout of this repo:
 
 ```bash
-node scripts/install-review-policy.js /path/to/project          # policy only
-node scripts/install-review-policy.js /path/to/project --watchdog # + watchdog
+node scripts/install-review-policy.cjs /path/to/project          # policy only
+node scripts/install-review-policy.cjs /path/to/project --watchdog # + watchdog
 ```
 
 Idempotent: skips append when the marker `<!-- pi-agent-stuff:review-policy v1 -->`
@@ -65,8 +65,8 @@ Before declaring any task done with changed source files:
 <!-- /pi-agent-stuff:review-policy -->
 ```
 
-Prerequisite: this pi package installed (`pi install
-pi:git@github.com:potentialdiffer/pi-agent-stuff.git`) so the named agents
+Prerequisite: this pi package installed
+(`pi install git:github.com/potentialdiffer/pi-agent-stuff`) so the named agents
 resolve. If the package is absent, substitute any local reviewer agents.
 
 ## Evidence

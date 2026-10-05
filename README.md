@@ -23,7 +23,7 @@ Custom extensions, skills, and prompts for the [Pi Coding Agent](https://github.
 - **pi-rtk-optimizer/** - RTK query optimization configuration
 - **mistral-agent-tools/** - Mistral AI tools
   - `mistral_generate_image` - Image generation from text prompts
-  - `mistral_websearch` - Websearch with citations
+  - `/mistral-websearch` - Websearch with citations (command-only; the LLM-callable `mistral_websearch` tool is deregistered in favor of pi-web-access's `web_search`)
   - `/mistral-setup` - Configure API key
   - `/mistral-image` - Generate images
   - `/mistral-websearch` - Search the web

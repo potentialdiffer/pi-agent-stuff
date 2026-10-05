@@ -1,5 +1,5 @@
 import type { ExtensionAPI, ExtensionContext, InputEvent } from "@earendil-works/pi-coding-agent";
-import { registerImageGenerationTool, registerWebsearchTool, registerOcrTool } from "./tools/index.ts";
+import { registerImageGenerationTool, registerOcrTool } from "./tools/index.ts";
 import { 
   registerSetupCommands, 
   registerStatusCommands, 
@@ -9,13 +9,13 @@ import {
   registerOcrCommands
 } from "./commands/index.ts";
 import { isConfigured, getApiKey } from "./modules/index.ts";
-import { clearAgentCache, clearWebsearchAgentCache, cleanupTempImages, continueWebsearchConversation, extractWebsearchResults } from "./modules/index.ts";
+import { cleanupTempImages, continueWebsearchConversation, extractWebsearchResults } from "./modules/index.ts";
 import { formatWebsearchResult } from "./modules/websearch-display.ts";
 import { DEFAULT_CONFIG, debugLog, debugAutocomplete } from "./config/index.ts";
 
 // ============================================================================
 // Mistral Agent Tools Extension
-// Main entry point for image generation and websearch tools
+// Main entry point: image generation tools + /mistral-websearch command
 // ============================================================================
 
 /**
@@ -23,7 +23,8 @@ import { DEFAULT_CONFIG, debugLog, debugAutocomplete } from "./config/index.ts";
  * 
  * Features:
  * - Image generation via Mistral's image generation API
- * - Websearch with citations via Mistral's websearch tool
+ * - Websearch with citations via the /mistral-websearch command
+ *   (Mistral's server-side web_search tool)
  * - API key management (environment variable or auth.json)
  * - Agent caching for better performance
  * - Conversation-based workflows
@@ -41,7 +42,12 @@ import { DEFAULT_CONFIG, debugLog, debugAutocomplete } from "./config/index.ts";
  * 
  * Tools:
  * - mistral_generate_image - LLM-callable image generation
- * - mistral_websearch - LLM-callable websearch
+ * - mistral_websearch - Deregistered as an LLM-callable tool (2026-10-05):
+ *   agent web search now routes through pi-web-access's web_search tool
+ *   (~40 providers, cheaper, no Mistral news_search hang). The tool
+ *   implementation is kept in src/tools/websearch.ts; re-enable by
+ *   re-adding registerWebsearchTool(pi) below. The /mistral-websearch
+ *   command and conversational follow-ups remain fully functional.
  */
 
 // Extension state
@@ -141,10 +147,12 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
   registerImageGenerationTool(pi);
   debugAutocomplete("Image generation tool registered successfully");
 
-  // Register the websearch tool
-  debugAutocomplete("Registering websearch tool...");
-  registerWebsearchTool(pi);
-  debugAutocomplete("Websearch tool registered successfully");
+  // Websearch tool intentionally NOT registered (2026-10-05).
+  // The agent's web searches now go through pi-web-access's web_search
+  // tool (~40 providers, cheaper, no Mistral news_search hang). Mistral
+  // websearch remains available via the /mistral-websearch command.
+  // To re-register the LLM-callable tool, add: registerWebsearchTool(pi)
+  debugAutocomplete("Websearch tool deregistered (command-only mode)");
 
   // ========================================================================
   // Register Commands
@@ -179,47 +187,26 @@ export default function mistralImageExtension(pi: ExtensionAPI) {
   // Tool Events
   // ========================================================================
 
-  // Track websearch conversation ID from tool results
-  pi.on("tool_result", async (event, ctx) => {
-    if (event.toolName === "mistral_websearch" && !event.isError) {
-      // Store conversation ID for follow-up questions
-      const conversationId = event.details?.conversationId;
-      const model = event.details?.model;
-      if (conversationId) {
-        lastWebsearchConversationId = String(conversationId);
-        lastWebsearchModel = model || DEFAULT_CONFIG.DEFAULT_WEBSEARCH_MODEL;
-        debugLog(`Stored conversation ID for follow-up: ${String(conversationId).substring(0, 20)}...`);
-      }
-    }
-  });
+  // Note: mistral_websearch tool-result tracking removed with the tool
+  // deregistration. Follow-up conversation IDs now come exclusively from
+  // the /mistral-websearch command path (setLastWebsearchConversation).
 
   // Intercept tool calls for logging
   pi.on("tool_call", async (event, ctx) => {
     if (event.toolName === "mistral_generate_image") {
       debugLog(`Image generation called: ${String(event.input?.prompt || "").substring(0, 50)}...`);
-    } else if (event.toolName === "mistral_websearch") {
-      debugLog(`Websearch called: ${String(event.input?.query || "").substring(0, 50)}...`);
     } else if (event.toolName === "ocr") {
       debugLog(`OCR called: ${String(event.input?.document || "").substring(0, 50)}...`);
     }
   });
 
-  // Handle tool results (already tracked above, just log here)
+  // Handle tool results (logging only)
   pi.on("tool_result", async (event, ctx) => {
     if (event.toolName === "mistral_generate_image") {
       if (event.isError) {
         console.error("[Mistral Agent Tools] Image generation failed:", event.details);
       } else {
         debugLog("Image generation successful");
-      }
-    } else if (event.toolName === "mistral_websearch") {
-      if (event.isError) {
-        console.error("[Mistral Agent Tools] Websearch failed:", event.details);
-        // Clear conversation on error
-        lastWebsearchConversationId = null;
-        lastWebsearchModel = null;
-      } else {
-        debugLog("Websearch successful");
       }
     }
   });

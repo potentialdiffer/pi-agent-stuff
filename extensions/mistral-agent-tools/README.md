@@ -135,7 +135,7 @@ Opens an interactive image browser showing all saved images in the `.pi-images/`
 
 ### LLM Tool Usage
 
-The extension registers two tools that the LLM can call automatically:
+The extension registers two tools that the LLM can call automatically (`mistral_websearch` is command-only since 2026-10-05):
 
 **Image Generation:**
 - **Tool:** `mistral_generate_image`
@@ -143,11 +143,16 @@ The extension registers two tools that the LLM can call automatically:
 - **LLM:** (automatically uses `mistral_generate_image` tool)
 - **Result:** Image displayed directly in the chat and saved to `.pi-images/`
 
-**Websearch:**
-- **Tool:** `mistral_websearch`
-- **User:** "What is the latest news about AI?"
-- **LLM:** (automatically uses `mistral_websearch` tool)
-- **Result:** Text response with numbered citations and reference list
+**Websearch (command-only since 2026-10-05):**
+- **Command:** `/mistral-websearch <query>`
+- **User:** `/mistral-websearch What is the latest news about AI?`
+- **Result:** Text response with numbered citations and reference list, with conversational follow-ups
+
+> **Note:** The LLM-callable `mistral_websearch` tool is deregistered. Agent web
+> search routes through pi-web-access's `web_search` tool (~40 providers,
+> cheaper, no Mistral news_search hang). The Mistral conversational search
+> flow remains fully available via the command. To re-register the tool, see
+> the comment in `src/index.ts`.
 
 ### Direct Tool Calls
 
@@ -161,7 +166,9 @@ The LLM will use the `mistral_generate_image` tool.
 ```
 What is the capital of France?
 ```
-The LLM may use the `mistral_websearch` tool if it needs current information.
+The LLM will use pi-web-access's `web_search` tool (or the built-in fetch
+tools) if it needs current information - the Mistral websearch tool is no
+longer registered for automatic use.
 
 ## Configuration
 

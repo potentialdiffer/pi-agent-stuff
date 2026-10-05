@@ -11,6 +11,7 @@ import {
   continueWebsearchConversation,
   pollWebsearchConversation,
   extractWebsearchResults,
+  hasCompletedConversationOutput,
   clearWebsearchAgentCache,
   getWebsearchAgentCacheStats,
   clearWebsearchConversation,
@@ -81,11 +82,8 @@ export function createWebsearchCommand(pi: ExtensionAPI) {
           getApiKey()
         );
 
-        // Poll if needed - check if any output has completedAt set
-        const hasCompletedOutput = conversation.outputs.some(output => 
-          (output.type === "message.output" && output.completedAt != null) ||
-          (output.type === "tool.execution" && output.completedAt != null)
-        );
+        // Poll if needed: completedAt timestamp OR answer text already present
+        const hasCompletedOutput = hasCompletedConversationOutput(conversation);
         
         if (!hasCompletedOutput) {
           ctx.ui.notify("⏳ Waiting for search results...", "info");

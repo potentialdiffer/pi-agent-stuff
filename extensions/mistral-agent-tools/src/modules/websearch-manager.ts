@@ -263,13 +263,40 @@ export function getWebsearchConversationCacheStats(): { size: number; entries: s
 // ============================================================================
 
 /**
+ * Check if a message output entry already carries a usable answer.
+ *
+ * SDK 2.7.0: content is either a plain string (uncited answers) or an array
+ * of typed chunks (never an array of strings). Must guard the string case
+ * first - calling .some() on a string throws.
+ *
+ * Mistral no longer populates completedAt on conversation history entries
+ * (verified null minutes after successful completion), so the presence of
+ * answer text is the reliable completion signal for polling.
+ */
+function hasMeaningfulContent(entry: MessageOutputEntry): boolean {
+  const content = entry.content;
+  if (typeof content === "string") {
+    return content.trim().length > 0;
+  }
+  if (!content || content.length === 0) {
+    return false;
+  }
+  // Only text chunks count as an answer; a message with only tool_reference
+  // chunks (or whitespace-only text) is not a usable answer yet.
+  return content.some(
+    (chunk) => chunk.type === "text" && typeof chunk.text === "string" && chunk.text.trim().length > 0
+  );
+}
+
+/**
  * Check if a conversation is complete by examining its outputs.
  * A conversation is considered complete when:
- * - The last message output has a non-null completedAt timestamp, OR
+ * - The last message output has a non-null completedAt timestamp or answer text, OR
  * - The web_search tool execution has a non-null completedAt timestamp
  * 
  * This is necessary because Mistral's ConversationResponse does not have a status field.
- * Completion must be determined by checking the completedAt field on output entries.
+ * CompletedAt is checked first (documented signal), answer text is the fallback
+ * for when Mistral omits completion timestamps.
  */
 function isConversationComplete(response: ConversationResponse): boolean {
   // Check if there's a completed message output (most common case)
@@ -279,7 +306,7 @@ function isConversationComplete(response: ConversationResponse): boolean {
   
   if (messageOutputs.length > 0) {
     const lastMessage = messageOutputs[messageOutputs.length - 1];
-    if (lastMessage.completedAt != null) {
+    if (lastMessage.completedAt != null || hasMeaningfulContent(lastMessage)) {
       return true;
     }
   }
@@ -303,30 +330,39 @@ function isConversationComplete(response: ConversationResponse): boolean {
 }
 
 /**
+ * getHistory returns the WHOLE conversation, not just the current turn.
+ * Only entries AFTER the last message.input belong to the current turn:
+ * earlier turns' message.output entries always carry answer text and would
+ * falsely mark a pending follow-up complete (stale-answer bug).
+ */
+function getCurrentTurnEntries(entries: ConversationHistory["entries"]): ConversationHistory["entries"] {
+  const lastInput = entries.map((e) => e.type).lastIndexOf("message.input");
+  return lastInput === -1 ? entries : entries.slice(lastInput + 1);
+}
+
+/**
  * Check if a conversation history indicates completion.
- * A conversation is complete when the last message output or tool execution has completedAt set.
+ * The current turn is complete when its message output has completedAt set
+ * or already carries answer text. A completed tool.execution alone does NOT
+ * count: without a message.output there is no answer to extract (extraction
+ * would throw "No content found"), and history completedAt is currently
+ * never populated anyway (verified null after successful completion).
  */
 function isConversationHistoryComplete(history: ConversationHistory): boolean {
-  if (history.entries.length === 0) {
+  const turn = getCurrentTurnEntries(history.entries);
+  if (turn.length === 0) {
     return false;
   }
 
-  // Check entries in order, last entry is most recent
-  for (let i = history.entries.length - 1; i >= 0; i--) {
-    const entry = history.entries[i];
-    
-    // Check message output completion
+  // Check entries in order, last entry is most recent. Only a message output
+  // with a completion timestamp or answer text completes the turn; otherwise
+  // keep polling for the answer.
+  for (let i = turn.length - 1; i >= 0; i--) {
+    const entry = turn[i];
+
     if (entry.type === "message.output") {
       const messageEntry = entry as MessageOutputEntry;
-      if (messageEntry.completedAt != null) {
-        return true;
-      }
-    }
-    
-    // Check tool execution completion
-    if (entry.type === "tool.execution") {
-      const toolEntry = entry as ToolExecutionEntry;
-      if (toolEntry.completedAt != null) {
+      if (messageEntry.completedAt != null || hasMeaningfulContent(messageEntry)) {
         return true;
       }
     }
@@ -336,13 +372,34 @@ function isConversationHistoryComplete(history: ConversationHistory): boolean {
 }
 
 /**
+ * Check whether a conversation response already contains a usable result:
+ * an entry with a completion timestamp (the documented signal) or a
+ * message output that already carries answer text.
+ *
+ * Mistral has stopped populating completedAt on some response paths
+ * (verified null on entries whose content is fully present), so text
+ * presence is the reliable fallback.
+ */
+export function hasCompletedConversationOutput(response: ConversationResponse): boolean {
+  return response.outputs.some((output) => {
+    if (output.type === "message.output") {
+      const message = output as MessageOutputEntry;
+      return message.completedAt != null || hasMeaningfulContent(message);
+    }
+    return output.type === "tool.execution" && (output as ToolExecutionEntry).completedAt != null;
+  });
+}
+
+/**
  * Convert ConversationHistory to a ConversationResponse-like structure
  * for compatibility with extractWebsearchResults.
  * This is a workaround since extractWebsearchResults expects ConversationResponse.
  */
 function conversationHistoryToResponse(history: ConversationHistory): ConversationResponse {
-  // Filter for message output entries (these contain the assistant's response)
-  const messageOutputs = history.entries.filter(
+  // Filter the CURRENT TURN for message output entries (these contain the
+  // assistant's response). Without the turn slice this returns a previous
+  // turn's answer for a follow-up query.
+  const messageOutputs = getCurrentTurnEntries(history.entries).filter(
     (e): e is MessageOutputEntry => e.type === "message.output"
   );
 
@@ -413,8 +470,11 @@ export async function startWebsearchConversation(
 /**
  * Poll conversation for websearch results using conversation history.
  * 
- * Uses conversations.getHistory() to retrieve entries with completion timestamps.
- * This is necessary because conversations.get() doesn't return outputs/entries.
+ * Uses conversations.getHistory() to retrieve entries. A conversation counts as
+ * complete when an entry has completedAt set or a message output already carries
+ * answer text (Mistral has stopped populating completedAt reliably).
+ * Polling runs at a fixed interval with a hard deadline of
+ * WEBSEARCH_MAX_POLL_ATTEMPTS * WEBSEARCH_POLL_INTERVAL_MS.
  */
 export async function pollWebsearchConversation(
   conversationId: string,
@@ -424,16 +484,46 @@ export async function pollWebsearchConversation(
 ): Promise<ConversationResponse> {
   const client = createMistralClient(apiKey);
 
+  const totalBudgetMs =
+    DEFAULT_CONFIG.WEBSEARCH_MAX_POLL_ATTEMPTS * DEFAULT_CONFIG.WEBSEARCH_POLL_INTERVAL_MS;
+  const deadline = Date.now() + totalBudgetMs;
+
   for (let attempt = 0; attempt < DEFAULT_CONFIG.WEBSEARCH_MAX_POLL_ATTEMPTS; attempt++) {
     if (signal?.aborted) {
       throw new Error("Websearch polling aborted");
     }
 
+    // First poll fires immediately; later polls wait the fixed interval.
+    // Fixed interval - never exponential backoff, which made the "2.5 minute"
+    // polling window silently grow to days. The wall-clock deadline is a
+    // backstop against attempt-count overshoot from slow API calls.
+    if (attempt > 0) {
+      const waitMs = Math.min(DEFAULT_CONFIG.WEBSEARCH_POLL_INTERVAL_MS, deadline - Date.now());
+      if (waitMs <= 0) {
+        break;
+      }
+      debugLog(`Waiting ${waitMs}ms before next attempt...`);
+      await new Promise((resolve) => setTimeout(resolve, waitMs));
+    }
+
+    const remainingMs = deadline - Date.now();
+    if (remainingMs <= 0) {
+      break;
+    }
+
     try {
-      // Get conversation history which includes entries with completion info
+      // Get conversation history which includes entries with completion info.
+      // Bound each call to the remaining deadline so a hung request cannot
+      // stall past the hard deadline. Note: AbortSignal.any() throws on
+      // nullish entries (unlike the WHATWG spec), so only include the
+      // caller's signal when one was actually provided.
+      const callSignals = [AbortSignal.timeout(Math.max(remainingMs, 1))];
+      if (signal) {
+        callSignals.push(signal);
+      }
       const history = await client.beta.conversations.getHistory(
         { conversationId: conversationId },
-        { signal }
+        { signal: AbortSignal.any(callSignals) }
       );
       
       debugLog(`Poll attempt ${attempt + 1}: entries=${history.entries.length}`);
@@ -445,27 +535,28 @@ export async function pollWebsearchConversation(
         // Convert history to ConversationResponse format for compatibility
         return conversationHistoryToResponse(history);
       }
-
-      // Wait before next poll
-      const delay = DEFAULT_CONFIG.WEBSEARCH_POLL_INTERVAL_MS * Math.pow(2, attempt); // Exponential backoff
-      debugLog(`Waiting ${delay}ms before next attempt...`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
     } catch (error) {
+      // User abort: the SDK throws RequestAbortedError (its name is NOT
+      // "AbortError"), so key off the signal itself. This also covers an
+      // abort during the final attempt, which would otherwise be reported
+      // as the 120s timeout.
+      if (signal?.aborted) {
+        throw error;
+      }
       if (error instanceof Error && error.name === "AbortError") {
         throw error;
       }
-      if (attempt === DEFAULT_CONFIG.WEBSEARCH_MAX_POLL_ATTEMPTS - 1) {
-        throw new WebsearchError(
-          `Failed to poll websearch conversation: ${error instanceof Error ? error.message : String(error)}`,
-          "polling",
-          true
-        );
-      }
+      // Transient getHistory failure (429/5xx/network) or per-call timeout:
+      // keep waiting out the deadline instead of burning all attempts back
+      // to back, then surface a clear timeout error.
+      debugLog(`Poll attempt ${attempt + 1} failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
   throw new WebsearchError(
-    `Max polling attempts (${DEFAULT_CONFIG.WEBSEARCH_MAX_POLL_ATTEMPTS}) reached for websearch conversation`,
+    `Websearch conversation ${conversationId} did not complete within ${Math.round(totalBudgetMs / 1000)} seconds. ` +
+      `Mistral's web_search backend may be delayed or stuck (news-type queries are known to hang ` +
+      `server-side). Retry, or rephrase as a non-news query.`,
     "polling",
     false
   );
@@ -542,10 +633,7 @@ export async function continueWebsearchConversation(
   }
 
   // Check if conversation is complete
-  const hasCompletedOutput = appendResponse.outputs.some(output =>
-    (output.type === "message.output" && output.completedAt != null) ||
-    (output.type === "tool.execution" && output.completedAt != null)
-  );
+  const hasCompletedOutput = hasCompletedConversationOutput(appendResponse);
 
   if (!hasCompletedOutput) {
     debugLog(`Continuation not complete, polling...`);

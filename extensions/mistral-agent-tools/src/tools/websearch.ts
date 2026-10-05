@@ -12,6 +12,7 @@ import {
   startWebsearchConversation,
   pollWebsearchConversation,
   extractWebsearchResults,
+  hasCompletedConversationOutput,
 } from "../modules/websearch-manager.ts";
 import { formatWithMarkdown } from "../modules/websearch-display.ts";
 import { Text, Container, Spacer } from "@earendil-works/pi-tui";
@@ -122,11 +123,8 @@ export function createWebsearchTool(pi: ExtensionAPI) {
         // Check if conversation is complete
         let finalConversation = conversationResponse;
         
-        // Check completion by looking at outputs' completedAt field
-        const hasCompletedOutput = conversationResponse.outputs.some(output => 
-          (output.type === "message.output" && output.completedAt != null) ||
-          (output.type === "tool.execution" && output.completedAt != null)
-        );
+        // Check completion: completedAt timestamp OR answer text already present
+        const hasCompletedOutput = hasCompletedConversationOutput(conversationResponse);
         
         if (!hasCompletedOutput) {
           onUpdate?.({

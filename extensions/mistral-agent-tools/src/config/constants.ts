@@ -17,8 +17,10 @@ export const DEFAULT_CONFIG = {
   MAX_RETRIES: 3,
   
   // Websearch-specific Configuration
-  WEBSEARCH_POLL_INTERVAL_MS: 5000, // 5 seconds between polls (websearch may take longer)
-  WEBSEARCH_MAX_POLL_ATTEMPTS: 30, // 150 seconds (2.5 minutes) total polling
+  // Fixed-interval polling with a hard deadline: 24 attempts x 5s = 120 seconds total.
+  // Never use exponential backoff here - a stuck conversation would otherwise hang for days.
+  WEBSEARCH_POLL_INTERVAL_MS: 5000, // 5 seconds between polls
+  WEBSEARCH_MAX_POLL_ATTEMPTS: 24, // 120 seconds (2 minutes) hard deadline
   WEBSEARCH_API_TIMEOUT_MS: 180_000, // 3 minutes for websearch
   
   // Caching Configuration

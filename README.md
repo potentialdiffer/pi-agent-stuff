@@ -10,8 +10,9 @@ Custom extensions, skills, and prompts for the [Pi Coding Agent](https://github.
   - `pdf_get_info` - Get PDF metadata (title, author, pages)
   - `pdf_extract_pages` - Extract specific page ranges
   - Requires: poppler-utils (pdftotext, pdfinfo)
-- **pi-status/** - Git status in footer
+- **pi-status/** - Git status and euro spending in footer
   - Shows branch, clean status, changes, staged, untracked counts
+  - Converts USD token costs to estimated EUR using daily ECB exchange rates
 - **security-gate/** - Security protection
   - Blocks dangerous commands (rm -rf, dd, mkfs, etc.)
   - Protects system paths (/etc, /usr, /bin, etc.)

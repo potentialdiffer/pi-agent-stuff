@@ -14,8 +14,29 @@ Displays Git repository status in the Pi footer.
 - Displays clean/dirty status
 - Counts staged, unstaged, and untracked changes
 - Updates automatically on directory changes
+- Shows token counts and estimated session spending in euros, e.g. `↑2.0k ↓500 ≈€0.123`
+- Keeps Mistral Vibe usage percentages when available; otherwise shows euro costs
 
-**Configuration:** None required. Works automatically in Git repositories.
+**Currency:** Pi records model costs in USD. The footer converts these to EUR using
+[ECB's daily reference feed](https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml),
+inverting its USD-per-EUR quote. `≈€` marks an estimate, not an invoice amount:
+provider exchange rates, taxes, and billing adjustments can differ. This changes
+only the custom footer, not Pi's `/session` report, stored costs, provider billing,
+or spending limits.
+
+Rates are fetched in the background when the footer starts, cached in memory for
+24 hours, and checked every five minutes. Failures retry after five minutes and
+keep the last successful rate for the current footer instance. Until a rate is
+available (including an offline restart), costs remain explicitly labeled `US$`;
+USD is never relabeled as EUR. Requests time out after five seconds and stop when
+the footer is disposed or the session shuts down. No exchange-rate config or disk
+cache is written.
+
+**Configuration:** None required for euro costs or Git status. Optional
+`extensions/pi-status/config.json` supports `mistralApiKey` for Vibe usage.
+
+**Tests:** With Node.js ≥ 22.19, run `npm test --prefix extensions/pi-status`.
+Tests use mocked responses and make no network requests.
 
 ---
 

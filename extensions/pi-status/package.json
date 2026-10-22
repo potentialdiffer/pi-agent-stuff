@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "pi extension that displays status information of current directory with git information",
   "main": "index.ts",
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.mts"
+  },
   "pi": {
     "extensions": [
       "./index.ts"

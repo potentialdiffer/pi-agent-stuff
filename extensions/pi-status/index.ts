@@ -3,7 +3,7 @@
  * 
  * Displays status information of current directory, starting with git information.
  * Shows branch, status, and other git details in the footer.
- * For Mistral models, shows Vibe monthly usage percentage instead of costs.
+ * Shows estimated euro costs using the daily ECB rate, or Mistral Vibe usage.
  */
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
@@ -12,6 +12,7 @@ import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 import fetch from "node-fetch";
 import { readFileSync } from "fs";
 import { join } from "path";
+import { EuroCostDisplay } from "./currency.ts";
 
 interface MistralVibeUsageResponse {
 	data?: Array<{
@@ -65,6 +66,8 @@ export default function (pi: ExtensionAPI) {
 	let mistralUsage: number | null = null;
 	let lastUsageFetch = 0;
 	let config: Config = {};
+	let stopCurrencyUpdates = () => {};
+	let updateFooter = () => {};
 
 	// Load config
 	function loadConfig(): Config {
@@ -104,7 +107,7 @@ export default function (pi: ExtensionAPI) {
 				return null;
 			}
 
-			const data: MistralVibeUsageResponse = await response.json();
+			const data = await response.json() as MistralVibeUsageResponse;
 			
 			// Calculate total consumed tokens from all workspaces
 			let totalConsumed = 0;
@@ -224,7 +227,22 @@ export default function (pi: ExtensionAPI) {
 			getMistralUsage().catch(() => {});
 		}
 
-		ctx.ui.setFooter((tui, theme, footerData) => {
+		updateFooter = () => ctx.ui.setFooter(enabled ? (tui, theme, footerData) => {
+			const euroCosts = new EuroCostDisplay(fetch);
+			let disposed = false;
+			const refreshCurrency = async () => {
+				await euroCosts.refresh();
+				if (!disposed) tui.requestRender();
+			};
+			const currencyInterval = setInterval(() => void refreshCurrency(), 5 * 60 * 1000);
+			const stopCurrency = () => {
+				disposed = true;
+				clearInterval(currencyInterval);
+				euroCosts.dispose();
+			};
+			stopCurrencyUpdates = stopCurrency;
+			void refreshCurrency();
+
 			const unsub = footerData.onBranchChange(() => {
 				updateGitInfo(ctx.cwd).catch(() => {});
 				tui.requestRender();
@@ -232,6 +250,7 @@ export default function (pi: ExtensionAPI) {
 
 			return {
 				dispose: () => {
+					stopCurrency();
 					unsub();
 					if (updateTimeout) clearTimeout(updateTimeout);
 				},
@@ -283,20 +302,13 @@ export default function (pi: ExtensionAPI) {
 					const fmt = (n: number) => (n < 1000 ? `${n}` : `${(n / 1000).toFixed(1)}k`);
 					const tokenStats = theme.fg("dim", `↑${fmt(input)} ↓${fmt(output)}`);
 					
-					// Check if using Mistral model and show Vibe usage percentage
+					// Rendering stays synchronous: both usage and exchange rates are cached.
 					const isMistralModel = ctx.model?.provider === "mistral";
-					if (isMistralModel && config.mistralApiKey) {
-						// Use cached usage value (updated in session_start and periodically)
-						// We can't await here as render must be synchronous
-						if (mistralUsage !== null) {
-							parts.push(`${tokenStats} ${mistralUsage}%`);
-						} else {
-							// Fallback to cost display if usage not available
-							parts.push(`${tokenStats}${cost > 0 ? ` $${cost.toFixed(3)}` : ''}`);
-						}
+					if (isMistralModel && config.mistralApiKey && mistralUsage !== null) {
+						parts.push(`${tokenStats} ${mistralUsage}%`);
 					} else {
-						// Non-Mistral model or no API key: show cost as before
-						parts.push(`${tokenStats}${cost > 0 ? ` $${cost.toFixed(3)}` : ''}`);
+						const costText = euroCosts.format(cost);
+						parts.push(`${tokenStats}${costText ? ` ${costText}` : ""}`);
 					}
 
 					const modelStr = ctx.model ? `${ctx.model.provider}/${ctx.model.id}` : "no-model";
@@ -306,10 +318,12 @@ export default function (pi: ExtensionAPI) {
 					return [truncateToWidth(combined, width)];
 				},
 			};
-		});
+		} : undefined);
+		updateFooter();
 	});
 
 	pi.on("session_shutdown", async () => {
+		stopCurrencyUpdates();
 		if (updateTimeout) {
 			clearTimeout(updateTimeout);
 			updateTimeout = undefined;
@@ -330,11 +344,8 @@ export default function (pi: ExtensionAPI) {
 		description: "Toggle pi-status extension",
 		handler: async (_args, ctx) => {
 			enabled = !enabled;
+			updateFooter();
 			ctx.ui.notify(`pi-status ${enabled ? "enabled" : "disabled"}`, "info");
-			ctx.ui.setFooter(enabled ? undefined : null);
-			if (enabled) {
-				setTimeout(() => ctx.ui.setFooter(undefined), 10);
-			}
 		},
 	});
 

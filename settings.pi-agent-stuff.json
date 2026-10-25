@@ -7,9 +7,9 @@
   },
   "observational-memory": {
     "model": {
-      "provider": "mistral",
-      "id": "zai-glm-5-3",
-      "thinking": "high"
+      "provider": "anthropic",
+      "id": "claude-haiku-5-5",
+      "thinking": "low"
     }
   }
 }

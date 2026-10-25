@@ -4,7 +4,7 @@
   "description": "Potentialdiffer's pi coding agent extensions, skills, and prompts for research and engineering",
   "type": "module",
   "engines": {
-    "node": ">=10"
+    "node": ">=10.12"
   },
   "keywords": [
     "pi-package",
@@ -28,11 +28,15 @@
     }
   },
   "scripts": {
-    "postinstall": "node scripts/postinstall.cjs"
+    "postinstall": "node scripts/postinstall.cjs",
+    "sync": "node scripts/postinstall.cjs --sync",
+    "update:sync": "node scripts/postinstall.cjs --update-and-sync",
+    "test:install": "node scripts/test-postinstall.cjs"
   },
   "dependencies": {
     "@mistralai/mistralai": "^2.7.0",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^3.3.2",
+    "proper-lockfile": "^4.1.2"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*",
